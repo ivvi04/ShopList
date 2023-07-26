@@ -1,0 +1,6 @@
+rootProject.name = 'ShopList'
+
+include("config-service")
+include("server-service")
+include("user-service")
+include("gateway-service")

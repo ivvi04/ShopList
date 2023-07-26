@@ -1,0 +1,19 @@
+
+server:
+  port: 8761
+
+eureka:
+  instance:
+    hostname: localhost
+#т.к. это не клиент, то убираем лишние настройки
+  client:
+    registerWithEureka: false
+    fetchRegistry: false
+#url, куда будет происходить регисрация микросервисов и другие важные действия
+    serviceUrl:
+      defaultZone: http://${eureka.instance.hostname}:${server.port}/eureka/
+
+#формат вывода логов
+logging:
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%X{traceId:-},%X{spanId:-}] ${LOG_LEVEL_PATTERN:-%5p} %m%n"

@@ -1,0 +1,23 @@
+server:
+  port: 0
+
+#url, куда будет происходить регистрация микросервисов и другие важные действия
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
+
+#формат вывода логов
+logging:
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%X{traceId:-},%X{spanId:-}] ${LOG_LEVEL_PATTERN:-%5p} %m%n"
+
+springdoc:
+  packagesToScan: ru.lakeevda.userservice
+
+spring:
+  datasource:
+    url: "jdbc:postgresql://localhost:5432/shoplist"
+    driver-class-name: "org.postgresql.Driver"
+    username: postgres
+    password: postgres
