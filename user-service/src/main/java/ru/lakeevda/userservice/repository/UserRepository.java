@@ -1,8 +1,10 @@
 package ru.lakeevda.userservice.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import ru.lakeevda.userservice.entity.UserData;
+import ru.lakeevda.userservice.entity.User;
 
-public interface UserRepository extends JpaRepository<UserData, Integer> {
-    public UserData findByPhone(Integer phone);
+import java.util.Optional;
+
+public interface UserRepository extends JpaRepository<User, Long> {
+    Optional<User> findByPhone(Integer phone);
 }

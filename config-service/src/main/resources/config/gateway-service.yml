@@ -6,26 +6,53 @@ eureka:
   client:
     serviceUrl:
       defaultZone: http://localhost:8761/eureka
+  instance:
+    preferIpAddress: true
+    lease-renewal-interval-in-seconds: 10
+    lease-expiration-duration-in-seconds: 20
+##формат вывода логов
+#logging:
+#  pattern:
+#    console: "%d{yyyy-MM-dd HH:mm:ss} [%X{traceId:-},%X{spanId:-}] ${LOG_LEVEL_PATTERN:-%5p} %m%n"
 
-#формат вывода логов
-logging:
-  pattern:
-    console: "%d{yyyy-MM-dd HH:mm:ss} [%X{traceId:-},%X{spanId:-}] ${LOG_LEVEL_PATTERN:-%5p} %m%n"
-
+#для корректной работы api gateway
 spring:
   cloud:
     gateway:
       discovery:
         locator:
-          #для корректной работы api gateway
           enabled: true
       routes:
+        - id: auth-service
+          uri: lb://auth-service
+          predicates:
+            - Path=/auth/**
+          filters:
+#            - AuthenticationFilter
+            - RewritePath=/auth/(?<path>.*), /$\{path}
+        - id: web-client
+          uri: lb://web-client
+          predicates:
+            - Path=/web-client/**
+          filters:
+            - AuthenticationFilter
+            - RewritePath=/web-client/(?<path>.*), /$\{path}
         - id: user-service
           uri: lb://user-service
           predicates:
             - Path=/user/**
           filters:
+            - AuthenticationFilter
             - RewritePath=/user/(?<path>.*), /$\{path}
+        - id: list-service
+          uri: lb://list-service
+          predicates:
+            - Path=/list/**
+          filters:
+            - AuthenticationFilter
+            - RewritePath=/list/(?<path>.*), /$\{path}
+#            - TokenRelay=
+#            - RemoveRequestHeader=Cookie
         - id: openapi
           uri: http://localhost:${server.port}
           predicates:
@@ -38,3 +65,5 @@ springdoc:
     urls:
       - name: user
         url: /v3/api-docs/user
+      - name: list
+        url: /v3/api-docs/list

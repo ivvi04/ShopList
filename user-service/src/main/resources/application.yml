@@ -1,7 +1,0 @@
-
-#id приложения = желательно указывать всегда в микросервисных приложениях
-spring:
-  application:
-    name: user-service
-  config:
-    import: "optional:configserver:http://localhost:8888"
