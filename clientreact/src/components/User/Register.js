@@ -174,7 +174,7 @@ const Register = (props) => {
                                 onClick={saveUser}
                                 disabled={user.email.length === 0 || user.password.length === 0}
                             >
-                                <FontAwesomeIcon icon={faUserPlus}/> Зарегистрироваться
+                                <FontAwesomeIcon icon={faUserPlus}/>
                             </Button>{" "}
                             <Button
                                 size="sm"
@@ -182,7 +182,7 @@ const Register = (props) => {
                                 variant="info"
                                 onClick={resetRegisterForm}
                             >
-                                <FontAwesomeIcon icon={faUndo}/> Сброс
+                                <FontAwesomeIcon icon={faUndo}/>
                             </Button>
                         </Card.Footer>
                     </Card>

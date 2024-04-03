@@ -181,7 +181,7 @@ class List extends Component {
     };
 
     listList = () => {
-        this.props.history.push("/list");
+        this.props.history.push("/lists");
     };
 
     searchChange = (event) => {

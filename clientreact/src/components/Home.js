@@ -3,10 +3,10 @@ import { useSelector } from "react-redux";
 import { Alert } from "react-bootstrap";
 
 const Home = () => {
-  const auth = useSelector((state) => state.auth);
+  const login = useSelector((state) => state.login);
   return (
     <Alert style={{ backgroundColor: "#343A40", color: "#ffffff80", display: "flex", justifyContent: "center"}}>
-        Welcome {auth.username}
+        Добро пожаловать, {login.username}!
     </Alert>
   );
 };

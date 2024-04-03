@@ -20,7 +20,7 @@ import {
   faFastForward,
 } from "@fortawesome/free-solid-svg-icons";
 
-class UserList extends Component {
+class User extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -201,4 +201,4 @@ const mapDispatchToProps = (dispatch) => {
   };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(UserList);
+export default connect(mapStateToProps, mapDispatchToProps)(User);

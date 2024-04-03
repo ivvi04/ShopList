@@ -7,15 +7,15 @@ eureka:
     serviceUrl:
       defaultZone: http://localhost:8761/eureka/
   instance:
-    instance-id: ${spring.application.name}:${random.uuid}
+    InstanceId: ${spring.application.name}:${random.uuid}
     preferIpAddress: true
-    lease-renewal-interval-in-seconds: 10
-    lease-expiration-duration-in-seconds: 20
+    leaseRenewalIntervalInSeconds: 5
+    leaseExpirationDurationInSeconds: 2
 
-#формат вывода логов
-logging:
-  pattern:
-    console: "%d{yyyy-MM-dd HH:mm:ss} [%X{traceId:-},%X{spanId:-}] ${LOG_LEVEL_PATTERN:-%5p} %m%n"
+##формат вывода логов
+#logging:
+#  pattern:
+#    console: "%d{yyyy-MM-dd HH:mm:ss} [%X{traceId:-},%X{spanId:-}] ${LOG_LEVEL_PATTERN:-%5p} %m%n"
 
 springdoc:
   packagesToScan: ru.lakeevda.listservice
@@ -23,6 +23,6 @@ springdoc:
 spring:
   datasource:
     url: "jdbc:postgresql://localhost:5432/shoplist"
-    driver-class-name: "org.postgresql.Driver"
+    driverClassName: "org.postgresql.Driver"
     username: postgres
     password: postgres

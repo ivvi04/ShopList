@@ -1,5 +1,4 @@
 import * as UT from "./loginTypes";
-// import axios from "axios";
 import * as authUser from "../../../utils/authUser";
 
 const AUTH_URL = "http://localhost:8765/auth/sign-in";

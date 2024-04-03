@@ -77,7 +77,7 @@ public class ListService {
         User user = findUserByPhone(phone);
         if (list.getAuthorId() != user.getId())
             throw new UserNotAuthorException("Только у автора есть права на изменение списка!");
-        listRepository.delete(list);
+        listRepository.save(list);
     }
 
     @Transactional
@@ -92,7 +92,7 @@ public class ListService {
     public ListDto addUserToList(Long id, Integer phone) {
         Lists list = findListById(id);
         User user = findUserByPhone(phone);
-        if (list.getAuthorId() != user.getId() && !list.getUsers().contains(user)) list.addUserToList(user);
+        if (list.getAuthorId() != user.getId() && !list.getUsers().contains(user)) list.addUser(user);
         listRepository.save(list);
         return getListDto(list);
     }
@@ -103,7 +103,7 @@ public class ListService {
         User user = findUserByPhone(phone);
 //        if (list.getAuthorId() == user.getId())
 //            throw new UserNotAuthorException("Автора нельзя удалить!");
-        list.deleteUserFromList(user);
+        list.deleteUser(user);
         listRepository.save(list);
         return getListDto(list);
     }

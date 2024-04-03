@@ -1,5 +1,4 @@
 import * as UT from "./listTypes";
-import axios from "axios";
 import * as authUser from "../../utils/authUser";
 
 export const findList = (listId) => {
@@ -14,7 +13,10 @@ export const findList = (listId) => {
             });
             dispatch(listSuccess(response.data));
         } catch (error) {
-            dispatch(listFailure(error));
+            let errorMessage;
+            if (error.response && error.response.data) errorMessage = error.response.data;
+            else errorMessage = error.message;
+            dispatch(listFailure(errorMessage));
         }
     };
 };
@@ -32,7 +34,10 @@ export const saveList = (list) => {
             });
             dispatch(listSuccess(response.data));
         } catch (error) {
-            dispatch(listFailure(error));
+            let errorMessage;
+            if (error.response && error.response.data) errorMessage = error.response.data;
+            else errorMessage = error.message;
+            dispatch(listFailure(errorMessage));
         }
     };
 };
@@ -44,13 +49,16 @@ export const updateList = (list) => {
         });
         try {
             const response = await authUser.makeAPIRequest({
-                method: 'delete',
+                method: 'put',
                 url: "http://localhost:8765/list/phone/" + localStorage.userPhone + "/update",
                 data: list
             });
             dispatch(listSuccess(response.data));
         } catch (error) {
-            dispatch(listFailure(error));
+            let errorMessage;
+            if (error.response && error.response.data) errorMessage = error.response.data;
+            else errorMessage = error.message;
+            dispatch(listFailure(errorMessage));
         }
     };
 };
@@ -67,12 +75,15 @@ export const deleteList = (listId) => {
             });
             dispatch(listSuccess(response.data));
         } catch (error) {
-            dispatch(listFailure(error));
+            let errorMessage;
+            if (error.response && error.response.data) errorMessage = error.response.data;
+            else errorMessage = error.message;
+            dispatch(listFailure(errorMessage));
         }
     };
 };
 
-export const addUserToList = (listId, userPhone) => {
+export const addUser = (listId, userPhone) => {
     return async (dispatch) => {
         dispatch({
             type: UT.UPDATE_LIST_REQUEST,
@@ -84,12 +95,15 @@ export const addUserToList = (listId, userPhone) => {
             });
             dispatch(listSuccess(response.data));
         } catch (error) {
-            dispatch(listFailure(error));
+            let errorMessage;
+            if (error.response && error.response.data) errorMessage = error.response.data;
+            else errorMessage = error.message;
+            dispatch(listFailure(errorMessage));
         }
     };
 };
 
-export const deleteUserFromList = (listId, userPhone) => {
+export const deleteUser = (listId, userPhone) => {
     return async (dispatch) => {
         dispatch({
             type: UT.UPDATE_LIST_REQUEST,
@@ -101,46 +115,13 @@ export const deleteUserFromList = (listId, userPhone) => {
             });
             dispatch(listSuccess(response.data));
         } catch (error) {
-            dispatch(listFailure(error));
+            let errorMessage;
+            if (error.response && error.response.data) errorMessage = error.response.data;
+            else errorMessage = error.message;
+            dispatch(listFailure(errorMessage));
         }
     };
 };
-
-export const deleteUserToList = (listId, userPhone) => {
-    return async (dispatch) => {
-        dispatch({
-            type: UT.UPDATE_LIST_REQUEST,
-        });
-        try {
-            const response = await authUser.makeAPIRequest({
-                method: 'put',
-                url: "http://localhost:8765/list/" + listId + "/user/delete?phone=" + userPhone
-            });
-            dispatch(listSuccess(response.data));
-        } catch (error) {
-            dispatch(listFailure(error));
-        }
-    };
-};
-
-// export const deleteList = (listId) => async (dispatch) => {
-//     dispatch({
-//         type: UT.DELETE_LIST_REQUEST,
-//     });
-//     try {
-//
-//         const response = await authUser.makeAPIRequest({
-//             method: 'delete',
-//             url: "http://localhost:8765/list/" + listId + "?userPhone=" + localStorage.userPhone
-//         });
-//         dispatch(listSuccess(response.data));
-//         return Promise.resolve(response.data);
-//     } catch (error) {
-//         dispatch(listFailure(error));
-//         return Promise.reject(error);
-//     }
-//     ;
-// };
 
 const listSuccess = (list) => {
     return {

@@ -5,14 +5,15 @@ import { Container, Row, Col } from "react-bootstrap";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 
 import NavigationBar from "./components/NavigationBar";
+import Home from "./components/Home";
+import Login from "./components/User/Login";
+import Register from "./components/User/Register";
 // import Welcome from "./components/Welcome";
 import List from "./components/Lists/List";
 import ListList from "./components/Lists/ListList";
-import UserList from "./components/User/UserList";
-import Register from "./components/User/Register";
-import Login from "./components/User/Login";
+import Product from "./components/Product/Product";
+import User from "./components/User/User";
 import Footer from "./components/Footer";
-import Home from "./components/Home";
 
 const App = () => {
   // window.onbeforeunload = (event) => {
@@ -24,10 +25,10 @@ const App = () => {
   //   return "";
   // };
 
-  const auth = useSelector((state) => state.auth);
-  auth.username = localStorage.getItem('userName');
-  auth.userphone = localStorage.getItem('userPhone');
-  auth.isLoggedIn = localStorage.getItem('isLoggedIn');
+  const login = useSelector((state) => state.login);
+  login.username = localStorage.getItem('userName');
+  login.userphone = localStorage.getItem('userPhone');
+  login.isLoggedIn = localStorage.getItem('isLoggedIn');
   // window.onbeforeunload = null;
   // window.onbeforeunload = function () {
   //   // Your Code here
@@ -41,13 +42,14 @@ const App = () => {
           <Col lg={12} className={"margin-top"}>
             <Switch>
               <Route path="/" exact component={Home} />
-              {/*<Route path="/home" exact component={Home} />*/}
-              <Route path="/add" exact component={List} />
-              <Route path="/edit/:id" exact component={List} />
-              <Route path="/lists" exact component={ListList} />
-              <Route path="/users" exact component={UserList} />
-              <Route path="/register" exact component={Register} />
               <Route path="/login" exact component={Login} />
+              <Route path="/register" exact component={Register} />
+              {/*<Route path="/home" exact component={Home} />*/}
+              {/*<Route path="/add" exact component={List} />*/}
+              <Route path="/list/edit/:id" exact component={List} />
+              <Route path="/list" exact component={ListList} />
+              <Route path="/product/edit/:id" exact component={Product} />
+              <Route path="/user" exact component={User} />
               <Route
                 path="/logout"
                 exact

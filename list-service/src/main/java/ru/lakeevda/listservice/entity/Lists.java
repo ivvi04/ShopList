@@ -28,14 +28,6 @@ public class Lists {
     @Column(name = "author_id", nullable = false)
     private long authorId;
 
-//    @OneToOne
-//    @JoinTable(name = "user",
-//    joinColumns = @JoinColumn(name = "id", referencedColumnName = "author_id"))
-//    private User userAuthor;
-//
-//    @Formula("(select user.phone from user, lists where lists.id = id and user.id = lists.author_id)")
-//    private Integer userPhone;
-
     @Column(name = "status", nullable = false, columnDefinition = "status_enum")
     @Enumerated(EnumType.STRING)
     @JdbcType(PostgreSQLEnumJdbcType.class)
@@ -44,14 +36,26 @@ public class Lists {
     @ManyToMany
     @JoinTable(name = "user_list",
             joinColumns = @JoinColumn(name = "list_id", referencedColumnName = "id"),
-    inverseJoinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"))
+            inverseJoinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"))
     private List<User> users = new ArrayList<>();
 
-    public void addUserToList (User user) {
+    @OneToMany
+    @JoinTable(name = "product",
+            joinColumns = @JoinColumn(name = "list_id", referencedColumnName = "id"))
+    private List<Product> products = new ArrayList<>();
+
+    public void addUser(User user) {
         users.add(user);
     }
 
-    public void deleteUserFromList (User user) {
+    public void deleteUser(User user) {
         users.remove(user);
+    }
+    public void addProduct (Product product) {
+        products.add(product);
+    }
+
+    public void deleteProduct (Product product) {
+        products.remove(product);
     }
 }

@@ -1,40 +1,32 @@
 import React, {Component} from "react";
 
 import {connect} from "react-redux";
-import {deleteList} from "../../services/index";
+import {deleteList, saveList} from "../../services/index";
 
 import "./../../assets/css/Style.css";
 import {
     Card,
     Table,
-    // Image,
     ButtonGroup,
     Button,
-    InputGroup,
-    FormControl, Alert,
+    Alert, InputGroup, FormControl,
 } from "react-bootstrap";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {
-    faList,
     faEdit,
     faTrash,
-    faStepBackward,
-    faFastBackward,
-    faStepForward,
-    faFastForward,
-    faSearch,
-    faTimes,
+    faPlus, faTimes,
 } from "@fortawesome/free-solid-svg-icons";
 import {Link} from "react-router-dom";
 import MyToast from "../MyToast";
-import axios from "axios";
 import * as authUser from "../../utils/authUser";
 
 class ListList extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            lists: []
+            lists: [],
+            searchList: "",
         };
     }
 
@@ -59,26 +51,71 @@ class ListList extends Component {
             });
     };
 
+    searchChange = (event) => {
+        const target = event.target;
+        let value = target.value;
+        this.setState({
+            [target.name]: value,
+        });
+    };
+
+    cancelSearch = (name) => {
+        this.setState({
+            [name]: "",
+        });
+    };
+
+    addList = () => {
+        const list = {
+            name: this.state.searchList,
+            phone: localStorage.userPhone,
+            users: []
+        };
+
+        this.props.saveList(list)
+            .then(() => {
+                const list = this.props.listObject.list;
+                const error = this.props.listObject.error;
+                if (list) {
+                    this.setState(state => {
+                        const newList = state.lists.concat(list);
+                        return {lists: newList}
+                    });
+                }
+                ;
+                this.setState({show: true});
+                if (error) this.setState({error: error});
+                else this.setState({message: "Список добавлен!"});
+                setTimeout(() => this.setState({show: false}), 3000);
+                this.cancelSearch("searchList");
+            })
+            .catch((error) => {
+                this.setState({show: true});
+                this.setState({error: error.message})
+                setTimeout(() => this.setState({show: false}), 3000);
+            });
+    };
+
     deleteList = (listId) => {
         this.props.deleteList(listId)
             .then(() => {
+                    const error = this.props.listObject.error;
                     this.setState({show: true});
-                    this.setState({message: "Список удален!"});
+                    if (error) this.setState({error: error});
+                    else this.setState({message: "Список удален!"});
                     setTimeout(() => this.setState({show: false}), 3000);
+                    this.findAllLists();
                 }
             )
             .catch((error) => {
-                let errorMessage;
-                if (error.response && error.response.data) errorMessage = error.response.data;
-                else errorMessage = error.message;
                 this.setState({show: true});
-                this.setState({error: errorMessage})
+                this.setState({error: error.message})
+                setTimeout(() => this.setState({show: false}), 3000);
             });
-        this.findAllLists();
     };
 
     render() {
-        const {lists} = this.state;
+        const {lists, searchList} = this.state;
 
         return (
             <div align={'center'}>
@@ -95,6 +132,38 @@ class ListList extends Component {
                     </Alert>
                 )}
                 <Card className={"border border-dark bg-dark text-white"} style={{width: '70%'}}>
+
+                    <Card.Header style={{textAlign: "right"}}>
+                        <InputGroup size="sm">
+                            <FormControl
+                                placeholder="Введите название списка"
+                                name="searchList"
+                                value={searchList || ''}
+                                type='text'
+                                className={"info-border bg-dark text-white"}
+                                onChange={this.searchChange}
+                            />
+                            <InputGroup.Append>
+                                <Button
+                                    size="sm"
+                                    variant="outline-success"
+                                    type="button"
+                                    onClick={this.addList}
+                                >
+                                    <FontAwesomeIcon icon={faPlus}/>
+                                </Button>
+                                <Button
+                                    size="sm"
+                                    variant="outline-danger"
+                                    type="button"
+                                    onClick={() => this.cancelSearch("searchList")}
+                                >
+                                    <FontAwesomeIcon icon={faTimes}/>
+                                </Button>
+
+                            </InputGroup.Append>
+                        </InputGroup>
+                    </Card.Header>
                     {/*<Card.Header>*/}
                     {/*  <div style={{ float: "left" }}>*/}
                     {/*    <FontAwesomeIcon icon={faList} /> List*/}
@@ -183,7 +252,7 @@ class ListList extends Component {
                                         <td>
                                             <ButtonGroup>
                                                 <Link
-                                                    to={"edit/" + list.id}
+                                                    to={"/list/edit/" + list.id}
                                                     className="btn btn-sm btn-outline-primary"
                                                 >
                                                     <FontAwesomeIcon icon={faEdit}/>
@@ -270,6 +339,7 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
     return {
+        saveList: (list) => dispatch(saveList(list)),
         deleteList: (listId) => dispatch(deleteList(listId)),
     };
 };

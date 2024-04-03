@@ -27,10 +27,10 @@ public class ProductService {
     }
 
     @Transactional
-    public void addProduct(Product newProduct) {
+    public Product addProduct(Product newProduct) {
         if (productRepository.existsByNameAndListId(newProduct.getName(), newProduct.getListId()))
             throw new ProductExistException("Продукт с таким название уже существует!");
-        productRepository.save(newProduct);
+        return productRepository.save(newProduct);
     }
 
     @Transactional

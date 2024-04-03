@@ -1,13 +1,5 @@
 import axios from "axios";
 
-// const authToken = () => {
-//   if (getTokenFromStorage) {
-//     axios.defaults.headers.common["Authorization"] = `${getTokenFromStorage}`;
-//   } else {
-//     delete axios.defaults.headers.common["Authorization"];
-//   }
-// };
-
 const JSON_HEADERS = {
   'Accept': 'application/json',
   'Content-Type': 'application/json; charset=utf-8'
@@ -19,11 +11,7 @@ export const setUserToStorage = (phone, userName, isLoggedIn, token) => {
   localStorage.setItem('isLoggedIn', true);
   localStorage.setItem('jwtToken', token);
 }
-// export const getTokenFromStorage = (userName, isLoggedIn, token) => {
-//   userName = localStorage.getItem('userName');
-//   isLoggedIn = localStorage.getItem('isLoggedIn');
-//   token = localStorage.getItem('jwtToken');
-// }
+
 export const removeUserFromStorage = () => {
   localStorage.removeItem('userPhone');
   localStorage.removeItem('userName');

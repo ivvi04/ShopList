@@ -19,25 +19,24 @@ public class ProductController {
         return ResponseEntity.ok().body(product);
     }
 
-    @GetMapping("/products/{listId}")
-    public ResponseEntity<List<Product>> getLists(@PathVariable Long listId) {
+    @GetMapping("/{listId}/products")
+    public ResponseEntity<List<Product>> getProducts(@PathVariable Long listId) {
         List<Product> productList = productService.findProductsByListId(listId);
         return ResponseEntity.ok().body(productList);
     }
 
     @PostMapping
-    public ResponseEntity<Void> addProduct(@RequestBody Product product) {
-        productService.addProduct(product);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<Product> addProduct(@RequestBody Product product) {
+        return ResponseEntity.ok().body(productService.addProduct(product));
     }
 
-    @PostMapping("/update")
+    @PutMapping("/update")
     public ResponseEntity<Void> updateProduct(@RequestBody Product product) {
         productService.updateProduct(product);
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/{listId}")
+    @PutMapping("/{listId}/delPurchased")
     public ResponseEntity<Void> deleteAllPurchasedProducts(@PathVariable Long listId) {
         productService.deleteAllPurchasedProducts(listId);
         return ResponseEntity.ok().build();

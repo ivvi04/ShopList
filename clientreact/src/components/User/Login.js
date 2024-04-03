@@ -43,7 +43,7 @@ const Login = (props) => {
             .then(() => {
                 setShow(true);
                 setTimeout(() => {
-                    return props.history.push("/lists");
+                    props.history.push("/lists");
                 }, 1000);
             })
             .catch((error) => {
@@ -142,7 +142,7 @@ const Login = (props) => {
                             onClick={validateUser}
                             disabled={user.phone.length === 0 || user.password.length === 0}
                         >
-                            <FontAwesomeIcon icon={faSignInAlt}/> Вход
+                            <FontAwesomeIcon icon={faSignInAlt}/>
                         </Button>{" "}
                         <Button
                             size="sm"
@@ -151,7 +151,7 @@ const Login = (props) => {
                             onClick={resetLoginForm}
                             disabled={user.phone.length === 0 && user.password.length === 0}
                         >
-                            <FontAwesomeIcon icon={faUndo}/> Сброс
+                            <FontAwesomeIcon icon={faUndo}/>
                         </Button>
                     </Card.Footer>
                 </Card>
