@@ -43,13 +43,6 @@ const userRequest = () => {
     };
 };
 
-// const userSavedSuccess = (user) => {
-//   return {
-//     type: RT.REGISTER_SAVED_SUCCESS,
-//     payload: user,
-//   };
-// };
-
 const userSuccess = (isLoggedIn) => {
     return {
         type: UT.REGISTER_SUCCESS,

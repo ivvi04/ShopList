@@ -120,7 +120,6 @@ class List extends Component {
                 this.setState({error: error.message})
                 setTimeout(() => this.setState({show: false}), 3000);
             })
-        // this.setState(this.initialListState);
     };
 
     updateList = (event) => {
@@ -147,7 +146,6 @@ class List extends Component {
                 this.setState({error: error.message})
                 setTimeout(() => this.setState({show: false}), 3000);
             });
-        // this.setState(this.initialListState);
     };
 
     deleteList = (listId) => {
@@ -357,17 +355,6 @@ class List extends Component {
                     </Alert>
                 )}
 
-                {/*<div style={{display: this.state.show ? "block" : "none"}}>*/}
-                {/*    <MyToast*/}
-                {/*        show={this.state.show}*/}
-                {/*        message={*/}
-                {/*            this.state.method === "put"*/}
-                {/*                ? "List Updated Successfully."*/}
-                {/*                : "List Saved Successfully."*/}
-                {/*        }*/}
-                {/*        type={"success"}*/}
-                {/*    />*/}
-                {/*</div>*/}
                 <Card className={"border border-dark bg-dark text-white"}>
                     <Form
                         onSubmit={this.state.id ? this.updateList : this.submitList}
@@ -439,13 +426,6 @@ class List extends Component {
                                                     <td>{product.name}</td>
                                                     <td style={{width: '50px'}}>
                                                         <ButtonGroup>
-                                                            {/*<Button*/}
-                                                            {/*    size="sm"*/}
-                                                            {/*    variant="outline-danger"*/}
-                                                            {/*    onClick={() => this.editProduct(product.id)}*/}
-                                                            {/*>*/}
-                                                            {/*    <FontAwesomeIcon icon={faEdit}/>*/}
-                                                            {/*</Button>*/}
                                                             <Link
                                                                 to={"product/edit/" + product.id}
                                                                 className="btn btn-sm btn-outline-primary"

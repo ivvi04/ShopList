@@ -24,7 +24,6 @@ import MyToast from "../MyToast";
 const Register = (props) => {
     const [error, setError] = useState();
     const [show, setShow] = useState(false);
-    // const [message] = useState(""); //setMessage
 
     const initialState = {
         username: "",
@@ -66,11 +65,6 @@ const Register = (props) => {
             <div style={{display: show ? "block" : "none"}}>
                 <MyToast show={show} message={props.message} type={"success"}/>
             </div>
-            {/*{show && props.message && (*/}
-            {/*    <Alert variant="success" onClose={() => setShow(false)} dismissible>*/}
-            {/*        {props.message}*/}
-            {/*    </Alert>*/}
-            {/*)}*/}
             {show && error && (
                 <Alert variant="danger" onClose={() => setShow(false)} dismissible>
                     {error}
