@@ -44,9 +44,9 @@ const getHeaders = () => {
 
 export const makeAPIRequest = ({ method, url, data }) => {
   return axios({
-    method,
-    url,
-    data,
+    method: method,
+    url: url,
+    data: data,
     headers: getHeaders()
   });
 }

@@ -14,12 +14,12 @@ import lombok.NoArgsConstructor;
 @Schema(description = "Запрос на регистрацию")
 public class SignUpRequest {
 
-    @Schema(description = "Имя пользователя", example = "Jon")
+    @Schema(description = "Имя пользователя", example = "Denis")
     @Size(min = 5, max = 50, message = "Имя пользователя должно содержать от 5 до 50 символов")
     @NotBlank(message = "Имя пользователя не может быть пустыми")
     private String username;
 
-    @Schema(description = "Пароль", example = "my_1secret1_password")
+    @Schema(description = "Пароль", example = "My_1password_")
     @Size(min = 8, max = 255, message = "Длина пароля должна быть не более 255 символов")
     private String password;
 
@@ -27,7 +27,7 @@ public class SignUpRequest {
     @Size(min = 11, max = 11, message = "Длина телефона должна быть 11 символов")
     private int phone;
 
-    @Schema(description = "Адрес электронной почты", example = "jondoe@gmail.com")
+    @Schema(description = "Адрес электронной почты", example = "denis@gmail.com")
     @Size(min = 5, max = 255, message = "Адрес электронной почты должен содержать от 5 до 255 символов")
     @NotBlank(message = "Адрес электронной почты не может быть пустыми")
     @Email(message = "Email адрес должен быть в формате user@example.com")

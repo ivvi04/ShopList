@@ -32,20 +32,12 @@ public class UserService {
         return user;
     }
 
-//    public String getNameByPhone(Integer phone) {
-//        User user = userRepository.findByPhone(phone);
-//        if (user == null) {
-//            return "User not found";
-//        } else {
-//            return user.getUsername();
-//        }
-//    }
-
     public User saveUser(User user) {
         if (userRepository.existsByPhone(user.getPhone()))
             throw new UserPhoneExistException("Пользователь с таким телефоном уже существует!");
         if (userRepository.existsByEmail(user.getEmail()))
             throw new UserEmailExistException("Пользователь с таким email уже существует!");
+        if (user.getUsername().isEmpty()) user.setUsername("user" + user.getId());
         user.setRole(UserRole.USER);
         return userRepository.save(user);
     }

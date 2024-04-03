@@ -23,5 +23,5 @@ public class User {
     private String username;
     @Basic
     @Column(name = "phone", nullable = false)
-    private int userPhone;
+    private int phone;
 }

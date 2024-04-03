@@ -30,10 +30,9 @@ import MyToast from "../MyToast";
 import axios from "axios";
 import * as authUser from "../../utils/authUser";
 
-class Lists extends Component {
+class ListList extends Component {
     constructor(props) {
         super(props);
-
         this.state = {
             lists: []
         };
@@ -46,16 +45,19 @@ class Lists extends Component {
     findAllLists() {
         authUser.makeAPIRequest({
             method: 'get',
-            url: "http://localhost:8765/list/user?userPhone=" + localStorage.userPhone
+            url: "http://localhost:8765/list/phone/" + localStorage.userPhone
         })
             .then((response) => {
                 this.setState({lists: response.data});
             })
             .catch((error) => {
-                console.log(error);
-                this.props.history.push("/");
+                let errorMessage;
+                if (error.response && error.response.data) errorMessage = error.response.data;
+                else errorMessage = error.message;
+                this.setState({show: true});
+                this.setState({error: errorMessage})
             });
-    }
+    };
 
     deleteList = (listId) => {
         this.props.deleteList(listId)
@@ -84,7 +86,7 @@ class Lists extends Component {
                     <MyToast
                         show={this.state.show}
                         message={this.state.message}
-                        type={"danger"}
+                        type={"success"}
                     />
                 </div>
                 {this.state.show && this.state.error && (
@@ -92,7 +94,7 @@ class Lists extends Component {
                         {this.state.error}
                     </Alert>
                 )}
-                <Card className={"border border-dark bg-dark text-white"} style={{ width: '70%' }}>
+                <Card className={"border border-dark bg-dark text-white"} style={{width: '70%'}}>
                     {/*<Card.Header>*/}
                     {/*  <div style={{ float: "left" }}>*/}
                     {/*    <FontAwesomeIcon icon={faList} /> List*/}
@@ -168,7 +170,12 @@ class Lists extends Component {
                                         {/*  />{" "}*/}
                                         {/*  {book.title}*/}
                                         {/*</td>*/}
-                                        <td style={{ width: '90%' }}>{list.name}</td>
+                                        <td style={{width: '90%'}}>
+                                            {/*<InputGroup size="sm">*/}
+                                            {list.name}
+                                            {/*</InputGroup.Append>*/}
+                                            {/*</InputGroup>*/}
+                                        </td>
                                         {/*<td>{book.isbnNumber}</td>*/}
                                         {/*<td>{book.price}</td>*/}
                                         {/*<td>{book.language}</td>*/}
@@ -267,4 +274,4 @@ const mapDispatchToProps = (dispatch) => {
     };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(Lists);
+export default connect(mapStateToProps, mapDispatchToProps)(ListList);

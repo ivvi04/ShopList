@@ -11,4 +11,5 @@ import java.util.List;
 
 public interface ListRepository extends JpaRepository<Lists, Long> {
     List<Lists> findListsByUsersContains(User user);
+    List<Lists> findListsByAuthorIdOrUsersContains(Long userId, User user);
 }

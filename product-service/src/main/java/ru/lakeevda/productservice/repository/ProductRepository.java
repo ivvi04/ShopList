@@ -5,11 +5,10 @@ import org.springframework.stereotype.Repository;
 import ru.lakeevda.productservice.entity.Product;
 
 import java.util.List;
-import java.util.Optional;
 
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Long> {
     List<Product> findProductsByListId(Long listId);
-    boolean existByNameAndListId(String name, Long listId);
+    boolean existsByNameAndListId(String name, Long listId);
     void deleteProductsByListIdAndPurchasedTrue(Long listId);
 }

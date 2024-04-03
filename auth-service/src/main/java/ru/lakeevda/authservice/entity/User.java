@@ -45,18 +45,6 @@ public class User implements UserDetails {
     @JdbcType(PostgreSQLEnumJdbcType.class)
     private UserRole role;
 
-//    private Collection<? extends GrantedAuthority> authorities;
-
-//    public User(long id, String username, String password, int phone, String email, UserRole role, Collection<? extends GrantedAuthority> authorities) {
-//        this.id = id;
-//        this.username = username;
-//        this.password = password;
-//        this.phone = phone;
-//        this.email = email;
-//        this.role = role;
-//        this.authorities = authorities;
-//    }
-
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return Collections.singletonList(new SimpleGrantedAuthority(role.name()));

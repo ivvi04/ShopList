@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.lakeevda.listservice.dto.ListDto;
-import ru.lakeevda.listservice.entity.Lists;
 import ru.lakeevda.listservice.service.ListService;
 
 import java.util.List;
@@ -15,41 +14,48 @@ public class ListController {
     private final ListService listService;
 
     @GetMapping("/{id}")
-    public ResponseEntity<Lists> getList(@PathVariable Long id) {
-        Lists lists = listService.findListById(id);
-        return ResponseEntity.ok().body(lists);
+    public ResponseEntity<ListDto> getList(@PathVariable Long id) {
+        ListDto list = listService.getListById(id);
+        return ResponseEntity.ok().body(list);
     }
 
-    @GetMapping("/user")
-    public ResponseEntity<List<Lists>> getLists(@RequestParam Integer userPhone) {
-        List<Lists> lists = listService.getListByUserPhone(userPhone);
+    @GetMapping("/phone/{phone}")
+    public ResponseEntity<List<ListDto>> getLists(@PathVariable Integer phone) {
+        List<ListDto> lists = listService.getListByUserPhone(phone);
         return ResponseEntity.ok().body(lists);
     }
 
     @PostMapping
-    public ResponseEntity<Lists> addList(@RequestBody Lists list) {
-        Lists resultList = listService.addList(list);
+    public ResponseEntity<ListDto> addList(@RequestBody ListDto list) {
+        ListDto resultList = listService.addList(list);
         return ResponseEntity.ok().body(resultList);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<Lists> addUserToList(@PathVariable Long id,
-                                               @RequestParam Integer userPhone) {
-        Lists list = listService.addUserToList(id, userPhone);
-        return ResponseEntity.ok().body(list);
-    }
-
-    @PostMapping("/{id}")
-    public ResponseEntity<Lists> deleteUserFromList(@PathVariable Long id,
-                                                    @RequestParam Integer userPhone) {
-        Lists list = listService.deleteUserFromList(id, userPhone);
-        return ResponseEntity.ok().body(list);
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteList(@PathVariable Long id,
-                                           @RequestParam Integer userPhone) {
-        listService.deleteList(id, userPhone);
+    @PutMapping("/phone/{phone}/update")
+    public ResponseEntity<Void> updateList(@PathVariable Integer phone,
+                                           @RequestBody ListDto list) {
+        listService.updateList(list, phone);
         return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/phone/{phone}/delete/{id}")
+    public ResponseEntity<Void> deleteList(@PathVariable Integer phone,
+                                           @PathVariable Long id) {
+        listService.deleteList(id, phone);
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping("/{id}/user/add")
+    public ResponseEntity<ListDto> addUserToList(@PathVariable Long id,
+                                                 @RequestParam Integer phone) {
+        ListDto list = listService.addUserToList(id, phone);
+        return ResponseEntity.ok().body(list);
+    }
+
+    @PutMapping("/{id}/user/delete")
+    public ResponseEntity<ListDto> deleteUserFromList(@PathVariable Long id,
+                                                      @RequestParam Integer phone) {
+        ListDto list = listService.deleteUserFromList(id, phone);
+        return ResponseEntity.ok().body(list);
     }
 }

@@ -24,9 +24,8 @@ public class AuthenticationFilter extends AbstractGatewayFilterFactory<Authentic
     public GatewayFilter apply(Config config) {
         return ((exchange, chain) -> {
             if (validator.isSecured.test(exchange.getRequest())) {
-//                header contains token or not
                 if (!exchange.getRequest().getHeaders().containsKey(HttpHeaders.AUTHORIZATION)) {
-                    throw new MissingAuthHeaderException("missing authorization header");
+                    throw new MissingAuthHeaderException("Отсутствует заголовок авторизации");
                 }
 
                 String authHeader = exchange.getRequest().getHeaders().get(HttpHeaders.AUTHORIZATION).get(0);
@@ -36,9 +35,7 @@ public class AuthenticationFilter extends AbstractGatewayFilterFactory<Authentic
                 try {
                     template.getForObject("http://localhost:8765/auth/validate?token=" + authHeader, String.class);
                 } catch (Exception e) {
-                    System.out.println("invalid access...!");
-                    System.out.println(e.getMessage());
-                    throw new UnAuthAccessToAppException("un authorized access to application");
+                    throw new UnAuthAccessToAppException("Несанкционированный доступ к приложению");
                 }
             }
             return chain.filter(exchange);

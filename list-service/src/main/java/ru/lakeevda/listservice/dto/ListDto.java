@@ -1,11 +1,11 @@
 package ru.lakeevda.listservice.dto;
 
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import ru.lakeevda.listservice.enums.ListStatus;
+import ru.lakeevda.listservice.entity.User;
+
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -13,7 +13,6 @@ import ru.lakeevda.listservice.enums.ListStatus;
 public class ListDto {
     private long id;
     private String name;
-    private Integer userPhone;
-    @Enumerated(EnumType.STRING)
-    private ListStatus status;
+    private Integer phone;
+    private List<User> users;
 }

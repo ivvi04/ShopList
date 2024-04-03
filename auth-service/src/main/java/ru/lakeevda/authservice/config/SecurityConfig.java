@@ -16,7 +16,6 @@ import ru.lakeevda.authservice.service.UserDetailService;
 
 @Configuration
 @EnableWebSecurity
-@Slf4j
 @RequiredArgsConstructor
 public class SecurityConfig {
 
@@ -33,7 +32,6 @@ public class SecurityConfig {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        log.info("Password: " + new BCryptPasswordEncoder().encode("1234"));
         return new BCryptPasswordEncoder();
     }
 

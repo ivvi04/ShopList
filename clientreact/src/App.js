@@ -7,7 +7,7 @@ import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import NavigationBar from "./components/NavigationBar";
 // import Welcome from "./components/Welcome";
 import List from "./components/Lists/List";
-import ListList from "./components/Lists/Lists";
+import ListList from "./components/Lists/ListList";
 import UserList from "./components/User/UserList";
 import Register from "./components/User/Register";
 import Login from "./components/User/Login";
@@ -52,7 +52,7 @@ const App = () => {
                 path="/logout"
                 exact
                 component={() => (
-                  <Login message="User Logged Out Successfully." />
+                  <Login message="Пользователь успешно вышел из системы" />
                 )}
               />
             </Switch>

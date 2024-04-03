@@ -24,14 +24,14 @@ public class Lists {
     @Basic
     @Column(name = "name", nullable = false, length = 100)
     private String name;
-//    @Basic
-//    @Column(name = "author_id", nullable = false)
-//    private long authorId;
+    @Basic
+    @Column(name = "author_id", nullable = false)
+    private long authorId;
 
-    @OneToOne
-    @JoinTable(name = "user",
-    joinColumns = @JoinColumn(name = "id", referencedColumnName = "author_id"))
-    private User userAuthor;
+//    @OneToOne
+//    @JoinTable(name = "user",
+//    joinColumns = @JoinColumn(name = "id", referencedColumnName = "author_id"))
+//    private User userAuthor;
 //
 //    @Formula("(select user.phone from user, lists where lists.id = id and user.id = lists.author_id)")
 //    private Integer userPhone;

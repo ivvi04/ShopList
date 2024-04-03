@@ -27,15 +27,14 @@ public class AuthController {
     @Operation(summary = "Авторизация пользователя")
     @PostMapping("/sign-in")
     public ResponseEntity<JwtAuthenticationResponse> signIn(@RequestBody @Valid SignInRequest request) {
-        System.out.println(request.toString());
         return ResponseEntity.ok().body(authenticationService.signIn(request));
     }
 
     @Operation(summary = "Проверка токена")
     @GetMapping("/validate")
     public String validateToken(@RequestParam String token) {
-        if (authenticationService.validateToken(token)) return "Token is valid";
-        else return "Token is not valid";
+        if (authenticationService.validateToken(token)) return "Токен валидный";
+        else return "Токен не валидный";
     }
 //    @GetMapping("/validate")
 //    public String validateToken(@RequestBody @Valid ValidTokenRequest request) {

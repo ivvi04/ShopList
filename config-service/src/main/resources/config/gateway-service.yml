@@ -8,12 +8,13 @@ eureka:
       defaultZone: http://localhost:8761/eureka
   instance:
     preferIpAddress: true
-    lease-renewal-interval-in-seconds: 10
-    lease-expiration-duration-in-seconds: 20
-##формат вывода логов
-#logging:
-#  pattern:
-#    console: "%d{yyyy-MM-dd HH:mm:ss} [%X{traceId:-},%X{spanId:-}] ${LOG_LEVEL_PATTERN:-%5p} %m%n"
+    lease-renewal-interval-in-seconds: 5
+    lease-expiration-duration-in-seconds: 2
+
+#формат вывода логов
+logging:
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%X{traceId:-},%X{spanId:-}] ${LOG_LEVEL_PATTERN:-%5p} %m%n"
 
 #для корректной работы api gateway
 spring:
@@ -28,7 +29,6 @@ spring:
           predicates:
             - Path=/auth/**
           filters:
-#            - AuthenticationFilter
             - RewritePath=/auth/(?<path>.*), /$\{path}
         - id: web-client
           uri: lb://web-client
@@ -51,8 +51,13 @@ spring:
           filters:
             - AuthenticationFilter
             - RewritePath=/list/(?<path>.*), /$\{path}
-#            - TokenRelay=
-#            - RemoveRequestHeader=Cookie
+        - id: product-service
+          uri: lb://product-service
+          predicates:
+            - Path=/product/**
+          filters:
+            - AuthenticationFilter
+            - RewritePath=/product/(?<path>.*), /$\{path}
         - id: openapi
           uri: http://localhost:${server.port}
           predicates:
@@ -67,3 +72,5 @@ springdoc:
         url: /v3/api-docs/user
       - name: list
         url: /v3/api-docs/list
+      - name: product
+        url: /v3/api-docs/product

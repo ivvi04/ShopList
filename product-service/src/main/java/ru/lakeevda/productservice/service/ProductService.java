@@ -26,33 +26,16 @@ public class ProductService {
         return productRepository.findProductsByListId(listId);
     }
 
-//    public User findUserById(Long id) {
-//        return userRepository.findById(id).orElseThrow(() ->
-//                new DataNotFoundException("Пользователь не найден!"));
-//    }
-//
-//    public User findUserByUsername(String username) {
-//        return userRepository.findByUsername(username).orElseThrow(() ->
-//                new DataNotFoundException("Пользователь не найден!"));
-//    }
-//
-//    public User findUserByUserPhone(Integer userPhone) {
-//        return userRepository.findByUserPhone(userPhone).orElseThrow(() ->
-//                new DataNotFoundException("Пользователь не найден!"));
-//    }
-
     @Transactional
-    public void addProduct(Product product) {
-        if (productRepository.existByNameAndListId(product.getName(), product.getListId()))
+    public void addProduct(Product newProduct) {
+        if (productRepository.existsByNameAndListId(newProduct.getName(), newProduct.getListId()))
             throw new ProductExistException("Продукт с таким название уже существует!");
-        productRepository.save(product);
+        productRepository.save(newProduct);
     }
 
     @Transactional
-    public void updateProduct(Product product) {
-        Product productFind = findProductById(product.getId());
-        productFind = product;
-        productRepository.save(productFind);
+    public void updateProduct(Product updateProduct) {
+        if (findProductById(updateProduct.getId()) != null) productRepository.save(updateProduct);
     }
 
     @Transactional

@@ -61,19 +61,31 @@ const Login = (props) => {
     return (
         <Row className="justify-content-md-center">
             <Col xs={5}>
-                <div style={{display: show ? "block" : "none"}}>
-                    <MyToast show={show} message={props.message} type={"success"}/>
+                {/*<div style={{display: show ? "block" : "none"}}>*/}
+                {/*    <MyToast show={show} message={props.message} type={"success"}/>*/}
+                {/*</div>*/}
+                <div style={{display: show && !error ? "block" : "none"}}>
+                    <MyToast
+                        show={show}
+                        message={props.message}
+                        type={"success"}
+                    />
                 </div>
-                {show && props.message && (
-                    <Alert variant="success" onClose={() => setShow(false)} dismissible>
-                        {props.message}
-                    </Alert>
-                )}
+                {/*{show && props.message && (*/}
+                {/*    <Alert variant="success" onClose={() => setShow(false)} dismissible>*/}
+                {/*        {props.message}*/}
+                {/*    </Alert>*/}
+                {/*)}*/}
                 {show && error && (
                     <Alert variant="danger" onClose={() => setShow(false)} dismissible>
                         {error}
                     </Alert>
                 )}
+                {/*{this.state.show && this.state.error && (*/}
+                {/*    <Alert variant="danger" onClose={() => this.setState({show: false})} dismissible>*/}
+                {/*        {this.state.error}*/}
+                {/*    </Alert>*/}
+                {/*)}*/}
                 <Card className={"border border-dark bg-dark text-white"}>
                     <Card.Header>
                         <FontAwesomeIcon icon={faSignInAlt}/> Авторизация

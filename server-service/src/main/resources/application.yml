@@ -5,3 +5,7 @@ spring:
     name: server-service
   config:
     import: "optional:configserver:http://localhost:8888"
+
+logging:
+  level:
+    com.netflix.discovery.shared.resolver.aws.ConfigClusterResolver: WARN
