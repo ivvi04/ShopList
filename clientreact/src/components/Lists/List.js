@@ -136,13 +136,9 @@ class List extends Component {
             .then(() => {
                     const error = this.props.listObject.error;
                     this.setState({show: true});
-                    if (error) {
-                        this.setState({error: error});
-                        this.findListById(this.state.id);
-                    } else {
-                        this.setState({message: "Список обновлен!"});
-                        this.listList();
-                    }
+                    if (error) this.setState({error: error});
+                    else this.setState({message: "Список обновлен!"});
+                    this.findListById(this.state.id);
                     setTimeout(() => this.setState({show: false}), 3000);
                 }
             )

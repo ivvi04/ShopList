@@ -1,6 +1,8 @@
 import * as UT from "./listTypes";
 import * as authUser from "../../utils/authUser";
 
+const LIST_URI = "http://localhost:8765/list";
+
 export const findList = (listId) => {
     return async (dispatch) => {
         dispatch({
@@ -9,7 +11,7 @@ export const findList = (listId) => {
         try {
             const response = await authUser.makeAPIRequest({
                 method: 'get',
-                url: "http://localhost:8765/list/" + listId
+                url: LIST_URI + "/" + listId
             });
             dispatch(listSuccess(response.data));
         } catch (error) {
@@ -29,7 +31,7 @@ export const saveList = (list) => {
         try {
             const response = await authUser.makeAPIRequest({
                 method: 'post',
-                url: "http://localhost:8765/list/",
+                url: LIST_URI,
                 data: list
             });
             dispatch(listSuccess(response.data));
@@ -50,7 +52,7 @@ export const updateList = (list) => {
         try {
             const response = await authUser.makeAPIRequest({
                 method: 'put',
-                url: "http://localhost:8765/list/phone/" + localStorage.userPhone + "/update",
+                url: LIST_URI + "/phone/" + localStorage.userPhone + "/update",
                 data: list
             });
             dispatch(listSuccess(response.data));
@@ -71,7 +73,7 @@ export const deleteList = (listId) => {
         try {
             const response = await authUser.makeAPIRequest({
                 method: 'delete',
-                url: "http://localhost:8765/list/phone/" + localStorage.userPhone + "/delete/" + listId
+                url: LIST_URI + "/phone/" + localStorage.userPhone + "/delete/" + listId
             });
             dispatch(listSuccess(response.data));
         } catch (error) {
@@ -91,7 +93,7 @@ export const addUser = (listId, userPhone) => {
         try {
             const response = await authUser.makeAPIRequest({
                 method: 'put',
-                url: "http://localhost:8765/list/" + listId + "/user/add?phone=" + userPhone
+                url: LIST_URI + "/" + listId + "/user/add?phone=" + userPhone
             });
             dispatch(listSuccess(response.data));
         } catch (error) {
@@ -111,7 +113,7 @@ export const deleteUser = (listId, userPhone) => {
         try {
             const response = await authUser.makeAPIRequest({
                 method: 'put',
-                url: "http://localhost:8765/list/" + listId + "/user/delete?phone=" + userPhone
+                url: LIST_URI + "/" + listId + "/user/delete?phone=" + userPhone
             });
             dispatch(listSuccess(response.data));
         } catch (error) {

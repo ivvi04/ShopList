@@ -1,6 +1,8 @@
 import * as UT from "./productTypes";
 import * as authUser from "../../utils/authUser";
 
+const PRODUCT_URI = "http://localhost:8765/product";
+
 export const findAllProducts = (listId) => {
     return async (dispatch) => {
         dispatch({
@@ -9,7 +11,7 @@ export const findAllProducts = (listId) => {
         try {
             const response = await authUser.makeAPIRequest({
                 method: 'get',
-                url: "http://localhost:8765/product/" + listId + "/products"
+                url: PRODUCT_URI + "/" + listId + "/products"
             });
             dispatch(productSuccess(response.data));
         } catch (error) {
@@ -29,7 +31,7 @@ export const findProduct = (productId) => {
         try {
             const response = await authUser.makeAPIRequest({
                 method: 'get',
-                url: "http://localhost:8765/product/" + productId
+                url: PRODUCT_URI + "/" + productId
             });
             dispatch(productSuccess(response.data));
         } catch (error) {
@@ -49,7 +51,7 @@ export const saveProduct = (product) => {
         try {
             const response = await authUser.makeAPIRequest({
                 method: 'post',
-                url: "http://localhost:8765/product/",
+                url: PRODUCT_URI,
                 data: product
             });
             dispatch(productSuccess(response.data));
@@ -70,7 +72,7 @@ export const updateProduct = (product) => {
         try {
             const response = await authUser.makeAPIRequest({
                 method: 'put',
-                url: "http://localhost:8765/product/update",
+                url: PRODUCT_URI + "/update",
                 data: product
             });
             dispatch(productSuccess(response.data));
@@ -91,7 +93,7 @@ export const deleteProduct = (productId) => {
         try {
             const response = await authUser.makeAPIRequest({
                 method: 'delete',
-                url: "http://localhost:8765/product/" + productId
+                url: PRODUCT_URI + "/" + productId
             });
             dispatch(productSuccess(response.data));
         } catch (error) {

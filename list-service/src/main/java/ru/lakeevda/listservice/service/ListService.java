@@ -77,6 +77,8 @@ public class ListService {
         User user = findUserByPhone(phone);
         if (list.getAuthorId() != user.getId())
             throw new UserNotAuthorException("Только у автора есть права на изменение списка!");
+        list.setName(updateList.getName());
+        list.setUsers(updateList.getUsers());
         listRepository.save(list);
     }
 
