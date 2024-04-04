@@ -1,204 +1,357 @@
-import React, { Component } from "react";
-import { connect } from "react-redux";
-import { fetchUsers } from "../../services/index";
+import React, {Component} from "react";
+import {connect} from "react-redux";
+import {
+    findUser,
+    updateUser,
+    changePassword,
+} from "../../services/index";
 
-import "./../../assets/css/Style.css";
 import {
-  Card,
-  Table,
-  InputGroup,
-  FormControl,
-  Button,
-  Alert,
+    Alert,
+    Button,
+    Card,
+    Row,
+    Col,
+    Form, Image,
 } from "react-bootstrap";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {
-  faUsers,
-  faStepBackward,
-  faFastBackward,
-  faStepForward,
-  faFastForward,
+    faBackward,
+    faEdit,
+    faPlusSquare,
+    faSave
 } from "@fortawesome/free-solid-svg-icons";
+import MyToast from "../MyToast";
 
 class User extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      users: [],
-      currentPage: 1,
-      usersPerPage: 5,
+    constructor(props) {
+        super(props);
+        this.state = this.initialUserState;
+        this.state = {
+            oldPassword: "",
+            password: "",
+            confirmPassword: ""
+        };
+    }
+
+    initialUserState = {
+        id: "",
+        username: "",
+        phone: "",
+        email: "",
+        image: ""
     };
-  }
 
-  componentDidMount() {
-    this.props.fetchUsers();
-  }
-
-  changePage = (event) => {
-    this.setState({
-      [event.target.name]: parseInt(event.target.value),
-    });
-  };
-
-  firstPage = () => {
-    if (this.state.currentPage > 1) {
-      this.setState({
-        currentPage: 1,
-      });
+    componentDidMount() {
+        this.findUserByPhone(localStorage.userPhone);
     }
-  };
 
-  prevPage = () => {
-    if (this.state.currentPage > 1) {
-      this.setState({
-        currentPage: this.state.currentPage - 1,
-      });
-    }
-  };
+    findUserByPhone = (userPhone) => {
+        this.props.findUser(userPhone)
+            .then(() => {
+                const user = this.props.userObject.user;
+                if (user) {
+                    this.setState({
+                        id: user.id,
+                        username: user.username,
+                        phone: user.phone,
+                        email: user.email,
+                        image: user.image
+                    })
+                } else {
+                    const error = this.props.userObject.error;
+                    if (error) {
+                        this.setState({show: true});
+                        this.setState({error: error});
+                        setTimeout(() => this.setState({show: false}), 3000);
+                    }
+                }
+            })
+            .catch((error) => {
+                this.setState({show: true});
+                this.setState({error: error.message})
+                setTimeout(() => this.setState({show: false}), 3000);
+            })
+    };
 
-  lastPage = () => {
-    let usersLength = this.props.userData.users.length;
-    if (
-      this.state.currentPage < Math.ceil(usersLength / this.state.usersPerPage)
-    ) {
-      this.setState({
-        currentPage: Math.ceil(usersLength / this.state.usersPerPage),
-      });
-    }
-  };
+    resetUser = () => {
+        this.setState(() => this.initialUserState);
+    };
 
-  nextPage = () => {
-    if (
-      this.state.currentPage <
-      Math.ceil(this.props.userData.users.length / this.state.usersPerPage)
-    ) {
-      this.setState({
-        currentPage: this.state.currentPage + 1,
-      });
-    }
-  };
+    updateUser = (event) => {
+        event.preventDefault();
 
-  render() {
-    const { currentPage, usersPerPage } = this.state;
-    const lastIndex = currentPage * usersPerPage;
-    const firstIndex = lastIndex - usersPerPage;
+        const user = {
+            id: this.state.id,
+            username: this.state.username,
+            phone: this.state.phone,
+            email: this.state.email,
+            image: this.state.image
+        };
 
-    const userData = this.props.userData;
-    const users = userData.users;
-    const currentUsers = users && users.slice(firstIndex, lastIndex);
-    const totalPages = users && users.length / usersPerPage;
+        this.props.updateUser(user)
+            .then(() => {
+                    const error = this.props.userObject.error;
+                    this.setState({show: true});
+                    if (error) {
+                        this.setState({error: error});
+                        this.findUserByPhone(this.state.phone);
+                    } else {
+                        this.setState({message: "Пользователь обновлен!"});
+                    }
+                    setTimeout(() => this.setState({show: false}), 3000);
+                }
+            )
+            .catch((error) => {
+                this.setState({show: true});
+                this.setState({error: error.message})
+                setTimeout(() => this.setState({show: false}), 3000);
+            });
+    };
 
-    return (
-      <div>
-        {userData.error ? (
-          <Alert variant="danger">{userData.error}</Alert>
-        ) : (
-          <Card className={"border border-dark bg-dark text-white"}>
-            <Card.Header>
-              <FontAwesomeIcon icon={faUsers} /> User List
-            </Card.Header>
-            <Card.Body>
-              <Table bordered hover striped variant="dark">
-                <thead>
-                  <tr>
-                    <td>Name</td>
-                    <td>Email</td>
-                    <td>Address</td>
-                    <td>Created</td>
-                    <td>Balance</td>
-                  </tr>
-                </thead>
-                <tbody>
-                  {users.length === 0 ? (
-                    <tr align="center">
-                      <td colSpan="6">No Users Available</td>
-                    </tr>
-                  ) : (
-                    currentUsers.map((user, index) => (
-                      <tr key={index}>
-                        <td>
-                          {user.first} {user.last}
-                        </td>
-                        <td>{user.email}</td>
-                        <td>{user.address}</td>
-                        <td>{user.created}</td>
-                        <td>{user.balance}</td>
-                      </tr>
-                    ))
-                  )}
-                </tbody>
-              </Table>
-            </Card.Body>
-            {users.length > 0 ? (
-              <Card.Footer>
-                <div style={{ float: "left" }}>
-                  Showing Page {currentPage} of {totalPages}
-                </div>
-                <div style={{ float: "right" }}>
-                  <InputGroup size="sm">
-                    <InputGroup.Prepend>
-                      <Button
-                        type="button"
-                        variant="outline-info"
-                        disabled={currentPage === 1 ? true : false}
-                        onClick={this.firstPage}
-                      >
-                        <FontAwesomeIcon icon={faFastBackward} /> First
-                      </Button>
-                      <Button
-                        type="button"
-                        variant="outline-info"
-                        disabled={currentPage === 1 ? true : false}
-                        onClick={this.prevPage}
-                      >
-                        <FontAwesomeIcon icon={faStepBackward} /> Prev
-                      </Button>
-                    </InputGroup.Prepend>
-                    <FormControl
-                      className={"page-num bg-dark"}
-                      name="currentPage"
-                      value={currentPage}
-                      onChange={this.changePage}
+    changePassword = (event) => {
+        event.preventDefault();
+
+        this.props.changePassword(this.state.phone,
+            this.state.oldPassword, this.state.password, this.state.confirmPassword)
+            .then(() => {
+                    const error = this.props.userObject.error;
+                    this.setState({show: true});
+                    if (error) {
+                        this.setState({error: error});
+                        this.findUserByPhone(this.state.phone);
+                    } else {
+                        this.setState({
+                            oldPassword: "",
+                            password: "",
+                            confirmPassword: "",
+                            message: "Пароль успешно изменен!"});
+                    }
+                    setTimeout(() => this.setState({show: false}), 3000);
+                }
+            )
+            .catch((error) => {
+                this.setState({show: true});
+                this.setState({error: error.message})
+                setTimeout(() => this.setState({show: false}), 3000);
+            });
+    };
+
+    userChange = (event) => {
+        if (event.target.name === "image") {
+            const file = event.target.files[0];
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => {
+                this.setState({
+                    [event.target.name]: reader.result,
+                });
+            };
+        } else {
+            this.setState({
+                [event.target.name]: event.target.value,
+            });
+        }
+    };
+
+    toList = () => {
+        this.props.history.push("/list");
+    };
+
+    render() {
+        const {username, phone, email, image, oldPassword, password, confirmPassword} = this.state;
+
+        return (
+            <div>
+                <div style={{display: this.state.show && !this.state.error ? "block" : "none"}}>
+                    <MyToast
+                        show={this.state.show}
+                        message={this.state.message}
+                        type={"success"}
                     />
-                    <InputGroup.Append>
-                      <Button
-                        type="button"
-                        variant="outline-info"
-                        disabled={currentPage === totalPages ? true : false}
-                        onClick={this.nextPage}
-                      >
-                        <FontAwesomeIcon icon={faStepForward} /> Next
-                      </Button>
-                      <Button
-                        type="button"
-                        variant="outline-info"
-                        disabled={currentPage === totalPages ? true : false}
-                        onClick={this.lastPage}
-                      >
-                        <FontAwesomeIcon icon={faFastForward} /> Last
-                      </Button>
-                    </InputGroup.Append>
-                  </InputGroup>
                 </div>
-              </Card.Footer>
-            ) : null}
-          </Card>
-        )}
-      </div>
-    );
-  }
+                {this.state.show && this.state.error && (
+                    <Alert variant="danger" onClose={() => this.setState({show: false})} dismissible>
+                        {this.state.error}
+                    </Alert>
+                )}
+
+                <Card className={"border border-dark bg-dark text-white"}>
+                    <Form
+                        onSubmit={this.updateUser}
+                        onReset={this.resetUser}
+                        id="userFormId"
+                    >
+                        <Card.Header style={{height: "50px"}}>
+                            <div style={{float: "left"}}>
+                                <FontAwesomeIcon icon={this.state.id ? faEdit : faPlusSquare}/>{" "}
+                                {this.state.id ? "Редактирование" : "Добавление"}
+                            </div>
+                            <div style={{float: "right"}}>
+                                <Button size="sm" variant="outline-info" onClick={this.toList}>
+                                    <FontAwesomeIcon icon={faBackward}/>
+                                </Button>{" "}
+                                <Button size="sm" variant="success" type="submit">
+                                    <FontAwesomeIcon icon={faSave}/>{" "}
+                                </Button>{" "}
+                            </div>
+                        </Card.Header>
+                        <Card.Body>
+                            <Row>
+                                <Col xs={6} md={4}>
+                                    <Form.Group controlId="formGridImage">
+                                        {image ?
+                                            (<Image alt="preview image" src={image}
+                                                    style={{
+                                                        width: "300px",
+                                                        borderRadius: '50%',
+                                                        overflow: 'hidden',
+                                                        borderWidth: 3,
+                                                        borderColor: 'grey',
+                                                    }}
+                                            />)
+                                            : (
+                                                <div>
+                                                    <canvas
+                                                        // ref={image}
+                                                        style={{
+                                                            width: "300px",
+                                                            height: "300px",
+                                                            background: "grey",
+                                                            borderRadius: '50%'
+                                                        }}
+                                                    />
+                                                </div>
+                                            )}
+
+                                        <Form.Control
+                                            autoComplete="off"
+                                            type="file"
+                                            name="image"
+                                            onChange={this.userChange}
+                                            className={"bg-dark text-white"}
+                                            placeholder="Изображение пользователя"
+                                            custom="true"
+                                            style={{width: "300px"}}
+                                        />
+                                    </Form.Group>
+                                </Col>
+                                <Col>
+                                    <Form.Group as={Row} controlId="formGridName">
+                                        <Form.Label column sm="3">Имя пользователя</Form.Label>
+                                        <Col sm="9">
+                                            <Form.Control
+                                                required
+                                                autoComplete="off"
+                                                type="text"
+                                                name="username"
+                                                value={username || ''}
+                                                onChange={this.userChange}
+                                                className={"bg-dark text-white"}
+                                                placeholder="Имя пользователя"
+                                            />
+                                        </Col>
+                                    </Form.Group>
+                                    <Form.Group as={Row} controlId="formGridPrice">
+                                        <Form.Label column sm="3">Номер телефона</Form.Label>
+                                        <Col sm="6">
+                                            <Form.Control
+                                                disabled={true}
+                                                autoComplete="off"
+                                                type="number"
+                                                name="phone"
+                                                value={phone || ''}
+                                                onChange={this.userChange}
+                                                className={"bg-dark text-white"}
+                                                placeholder="Номер телефона"
+                                            />
+                                        </Col>
+                                    </Form.Group>
+                                    <Form.Group as={Row} controlId="formGridUrl">
+                                        <Form.Label column sm="3">Email</Form.Label>
+                                        <Col sm="9">
+                                            <Form.Control
+                                                autoComplete="off"
+                                                type="text"
+                                                name="email"
+                                                value={email || ''}
+                                                onChange={this.userChange}
+                                                className={"bg-dark text-white"}
+                                                placeholder="Email"
+                                            />
+                                        </Col>
+                                    </Form.Group>
+                                    <hr/>
+                                    <Form.Group as={Row} controlId="oldPassword">
+                                        <Form.Label column sm="3">Старый пароль</Form.Label>
+                                        <Col sm="9">
+                                            <Form.Control
+                                                type="password"
+                                                name="oldPassword"
+                                                value={oldPassword}
+                                                onChange={this.userChange}
+                                                className={"bg-dark text-white"}
+                                                placeholder="Старый пароль"
+                                            />
+                                        </Col>
+                                    </Form.Group>
+                                    <Form.Group as={Row} controlId="password">
+                                        <Form.Label column sm="3">Новый пароль</Form.Label>
+                                        <Col sm="9">
+                                            <Form.Control
+                                                type="password"
+                                                name="password"
+                                                value={password}
+                                                onChange={this.userChange}
+                                                className={"bg-dark text-white"}
+                                                placeholder="Новый пароль"
+                                            />
+                                        </Col>
+                                    </Form.Group>
+                                    <Form.Group as={Row} controlId="confirmPassword">
+                                        <Form.Label column sm="3">Подтвердите пароль</Form.Label>
+                                        <Col sm="9">
+                                            <Form.Control
+                                                type="password"
+                                                name="confirmPassword"
+                                                value={confirmPassword}
+                                                onChange={this.userChange}
+                                                className={"bg-dark text-white"}
+                                                placeholder="Подтвердите пароль"
+                                            />
+                                        </Col>
+                                    </Form.Group>
+                                    <Button
+                                        block
+                                        type="submit"
+                                        onClick={this.changePassword}
+                                    > Сменить пароль
+                                    </Button>
+                                </Col>
+                            </Row>
+                        </Card.Body>
+                        <Card.Footer style={{textAlign: "right"}}>
+                        </Card.Footer>
+                    </Form>
+                </Card>
+            </div>
+        );
+    }
 }
 
 const mapStateToProps = (state) => {
-  return {
-    userData: state.user,
-  };
+    return {
+        userObject: state.user,
+    };
 };
 
 const mapDispatchToProps = (dispatch) => {
-  return {
-    fetchUsers: () => dispatch(fetchUsers()),
-  };
+    return {
+        findUser: (userPhone) => dispatch(findUser(userPhone)),
+        updateUser: (user) => dispatch(updateUser(user)),
+        changePassword: (userPhone, oldPassword, password, confirmPassword) =>
+            dispatch(changePassword(userPhone, oldPassword, password, confirmPassword)),
+    };
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(User);

@@ -6,6 +6,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ru.lakeevda.authservice.dto.ChangePasswordRequest;
 import ru.lakeevda.authservice.dto.JwtAuthenticationResponse;
 import ru.lakeevda.authservice.dto.SignInRequest;
 import ru.lakeevda.authservice.dto.SignUpRequest;
@@ -28,6 +29,12 @@ public class AuthController {
     @PostMapping("/sign-in")
     public ResponseEntity<JwtAuthenticationResponse> signIn(@RequestBody @Valid SignInRequest request) {
         return ResponseEntity.ok().body(authenticationService.signIn(request));
+    }
+
+    @Operation(summary = "Смена пароля")
+    @PostMapping("/change-password")
+    public ResponseEntity<JwtAuthenticationResponse> changePassword(@RequestBody ChangePasswordRequest changePasswordRequest) {
+        return ResponseEntity.ok().body(authenticationService.changePassword(changePasswordRequest));
     }
 
     @Operation(summary = "Проверка токена")

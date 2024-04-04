@@ -5,7 +5,10 @@ server:
 eureka:
   instance:
     hostname: localhost
+#    hostname: server-service
     preferIpAddress: true
+    leaseRenewalIntervalInSeconds: 30
+    leaseExpirationDurationInSeconds: 30
 #т.к. это не клиент, то убираем лишние настройки
   client:
     registerWithEureka: false

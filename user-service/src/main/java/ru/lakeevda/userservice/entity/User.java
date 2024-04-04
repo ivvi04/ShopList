@@ -26,4 +26,7 @@ public class User {
     @Basic
     @Column(name = "email", nullable = true, length = 100)
     private String email;
+    @Basic
+    @Column(name = "image", nullable = true, length = -1)
+    private String image;
 }

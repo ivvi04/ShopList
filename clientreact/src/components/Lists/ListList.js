@@ -82,7 +82,6 @@ class ListList extends Component {
                         return {lists: newList}
                     });
                 }
-                ;
                 this.setState({show: true});
                 if (error) this.setState({error: error});
                 else this.setState({message: "Список добавлен!"});
@@ -133,7 +132,7 @@ class ListList extends Component {
                 )}
                 <Card className={"border border-dark bg-dark text-white"} style={{width: '70%'}}>
 
-                    <Card.Header style={{textAlign: "right"}}>
+                    <Card.Header style={{textAlign: "right", height: "50px"}}>
                         <InputGroup size="sm">
                             <FormControl
                                 placeholder="Введите название списка"
@@ -154,7 +153,7 @@ class ListList extends Component {
                                 </Button>
                                 <Button
                                     size="sm"
-                                    variant="outline-danger"
+                                    variant="outline-warning"
                                     type="button"
                                     onClick={() => this.cancelSearch("searchList")}
                                 >

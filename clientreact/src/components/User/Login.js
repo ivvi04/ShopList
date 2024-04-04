@@ -43,8 +43,8 @@ const Login = (props) => {
             .then(() => {
                 setShow(true);
                 setTimeout(() => {
-                    props.history.push("/lists");
-                }, 1000);
+                    props.history.push("/list");
+                }, 3000);
             })
             .catch((error) => {
                 console.log(error.message);

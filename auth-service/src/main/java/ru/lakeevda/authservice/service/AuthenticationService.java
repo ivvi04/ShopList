@@ -10,6 +10,9 @@ import ru.lakeevda.authservice.config.UserPhonePasswordAuthenticationToken;
 import ru.lakeevda.authservice.dto.*;
 import ru.lakeevda.authservice.entity.User;
 import ru.lakeevda.authservice.entity.enums.UserRole;
+import ru.lakeevda.authservice.exception.ConfirmPasswordIncorrectException;
+import ru.lakeevda.authservice.exception.OldPasswordIncorrectException;
+import ru.lakeevda.authservice.repository.UserRepository;
 
 @Service
 @RequiredArgsConstructor
@@ -19,12 +22,11 @@ public class AuthenticationService {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
 
-    private JwtAuthenticationResponse generateToken(Integer phone, String password) {
-        UserDetails userDetails = userService
-                .loadUserByPhone(phone);
+    private JwtAuthenticationResponse generateToken(Integer phone) {
+        User user = userService.loadUserByPhone(phone);
 
-        String jwt = jwtService.generateToken(userDetails);
-        return new JwtAuthenticationResponse(userDetails.getUsername(), jwt);
+        String jwt = jwtService.generateToken(user);
+        return new JwtAuthenticationResponse(user.getUsername(), jwt);
     }
 
     @Transactional
@@ -46,14 +48,31 @@ public class AuthenticationService {
                 request.getPhone(),
                 request.getPassword()
         ));
-        return generateToken(request.getPhone(), request.getPassword());
+        return generateToken(request.getPhone());
     }
 
     public boolean validateToken(ValidTokenRequest request) {
-        UserDetails userDetails = userService
-                .loadUserByUsername(request.getUsername());
+        User user = userService
+                .loadUserByPhone(request.getPhone());
 
-        return jwtService.isTokenValid(request.getToken(), userDetails);
+        return jwtService.isTokenValid(request.getToken(), user);
+    }
+
+    @Transactional
+    public JwtAuthenticationResponse changePassword(ChangePasswordRequest request) {
+        User user = userService
+                .loadUserByPhone(request.getPhone());
+        if(!passwordEncoder.matches(request.getOldPassword(), user.getPassword()))
+            throw new OldPasswordIncorrectException("Старый пароль некорректный!");
+        if (!request.getPassword().equals(request.getConfirmPassword()))
+            throw new ConfirmPasswordIncorrectException("Новый пароль не совпадает с подтвержденным!");
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
+        userService.saveUser(user, false);
+        authenticationManager.authenticate(new UserPhonePasswordAuthenticationToken(
+                request.getPhone(),
+                request.getPassword()
+        ));
+        return generateToken(request.getPhone());
     }
 
     public boolean validateToken(String token) {

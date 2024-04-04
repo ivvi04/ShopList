@@ -1,7 +1,7 @@
 import * as UT from "./listTypes";
 import * as authUser from "../../utils/authUser";
 
-const LIST_URI = "http://localhost:8765/list";
+const LIST_URI = "http://localhost:8765/list/";
 
 export const findList = (listId) => {
     return async (dispatch) => {
@@ -11,14 +11,14 @@ export const findList = (listId) => {
         try {
             const response = await authUser.makeAPIRequest({
                 method: 'get',
-                url: LIST_URI + "/" + listId
+                url: LIST_URI + listId
             });
-            dispatch(listSuccess(response.data));
+            dispatch(success(response.data));
         } catch (error) {
             let errorMessage;
             if (error.response && error.response.data) errorMessage = error.response.data;
             else errorMessage = error.message;
-            dispatch(listFailure(errorMessage));
+            dispatch(failure(errorMessage));
         }
     };
 };
@@ -34,12 +34,12 @@ export const saveList = (list) => {
                 url: LIST_URI,
                 data: list
             });
-            dispatch(listSuccess(response.data));
+            dispatch(success(response.data));
         } catch (error) {
             let errorMessage;
             if (error.response && error.response.data) errorMessage = error.response.data;
             else errorMessage = error.message;
-            dispatch(listFailure(errorMessage));
+            dispatch(failure(errorMessage));
         }
     };
 };
@@ -52,15 +52,15 @@ export const updateList = (list) => {
         try {
             const response = await authUser.makeAPIRequest({
                 method: 'put',
-                url: LIST_URI + "/phone/" + localStorage.userPhone + "/update",
+                url: LIST_URI + "phone/" + localStorage.userPhone + "/update",
                 data: list
             });
-            dispatch(listSuccess(response.data));
+            dispatch(success(response.data));
         } catch (error) {
             let errorMessage;
             if (error.response && error.response.data) errorMessage = error.response.data;
             else errorMessage = error.message;
-            dispatch(listFailure(errorMessage));
+            dispatch(failure(errorMessage));
         }
     };
 };
@@ -73,14 +73,14 @@ export const deleteList = (listId) => {
         try {
             const response = await authUser.makeAPIRequest({
                 method: 'delete',
-                url: LIST_URI + "/phone/" + localStorage.userPhone + "/delete/" + listId
+                url: LIST_URI + "phone/" + localStorage.userPhone + "/delete/" + listId
             });
-            dispatch(listSuccess(response.data));
+            dispatch(success(response.data));
         } catch (error) {
             let errorMessage;
             if (error.response && error.response.data) errorMessage = error.response.data;
             else errorMessage = error.message;
-            dispatch(listFailure(errorMessage));
+            dispatch(failure(errorMessage));
         }
     };
 };
@@ -93,14 +93,14 @@ export const addUser = (listId, userPhone) => {
         try {
             const response = await authUser.makeAPIRequest({
                 method: 'put',
-                url: LIST_URI + "/" + listId + "/user/add?phone=" + userPhone
+                url: LIST_URI + listId + "/user/add?phone=" + userPhone
             });
-            dispatch(listSuccess(response.data));
+            dispatch(success(response.data));
         } catch (error) {
             let errorMessage;
             if (error.response && error.response.data) errorMessage = error.response.data;
             else errorMessage = error.message;
-            dispatch(listFailure(errorMessage));
+            dispatch(failure(errorMessage));
         }
     };
 };
@@ -113,26 +113,26 @@ export const deleteUser = (listId, userPhone) => {
         try {
             const response = await authUser.makeAPIRequest({
                 method: 'put',
-                url: LIST_URI + "/" + listId + "/user/delete?phone=" + userPhone
+                url: LIST_URI + listId + "/user/delete?phone=" + userPhone
             });
-            dispatch(listSuccess(response.data));
+            dispatch(success(response.data));
         } catch (error) {
             let errorMessage;
             if (error.response && error.response.data) errorMessage = error.response.data;
             else errorMessage = error.message;
-            dispatch(listFailure(errorMessage));
+            dispatch(failure(errorMessage));
         }
     };
 };
 
-const listSuccess = (list) => {
+const success = (list) => {
     return {
         type: UT.LIST_SUCCESS,
         payload: list,
     };
 };
 
-const listFailure = (error) => {
+const failure = (error) => {
     return {
         type: UT.LIST_FAILURE,
         payload: error,

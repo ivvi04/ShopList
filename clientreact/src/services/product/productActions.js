@@ -1,7 +1,7 @@
 import * as UT from "./productTypes";
 import * as authUser from "../../utils/authUser";
 
-const PRODUCT_URI = "http://localhost:8765/product";
+const PRODUCT_URI = "http://localhost:8765/product/";
 
 export const findAllProducts = (listId) => {
     return async (dispatch) => {
@@ -11,14 +11,14 @@ export const findAllProducts = (listId) => {
         try {
             const response = await authUser.makeAPIRequest({
                 method: 'get',
-                url: PRODUCT_URI + "/" + listId + "/products"
+                url: PRODUCT_URI + listId + "/products"
             });
-            dispatch(productSuccess(response.data));
+            dispatch(success(response.data));
         } catch (error) {
             let errorMessage;
             if (error.response && error.response.data) errorMessage = error.response.data;
             else errorMessage = error.message;
-            dispatch(productFailure(errorMessage));
+            dispatch(failure(errorMessage));
         }
     };
 };
@@ -31,14 +31,14 @@ export const findProduct = (productId) => {
         try {
             const response = await authUser.makeAPIRequest({
                 method: 'get',
-                url: PRODUCT_URI + "/" + productId
+                url: PRODUCT_URI + productId
             });
-            dispatch(productSuccess(response.data));
+            dispatch(success(response.data));
         } catch (error) {
             let errorMessage;
             if (error.response && error.response.data) errorMessage = error.response.data;
             else errorMessage = error.message;
-            dispatch(productFailure(errorMessage));
+            dispatch(failure(errorMessage));
         }
     };
 };
@@ -54,12 +54,12 @@ export const saveProduct = (product) => {
                 url: PRODUCT_URI,
                 data: product
             });
-            dispatch(productSuccess(response.data));
+            dispatch(success(response.data));
         } catch (error) {
             let errorMessage;
             if (error.response && error.response.data) errorMessage = error.response.data;
             else errorMessage = error.message;
-            dispatch(productFailure(errorMessage));
+            dispatch(failure(errorMessage));
         }
     };
 };
@@ -72,15 +72,15 @@ export const updateProduct = (product) => {
         try {
             const response = await authUser.makeAPIRequest({
                 method: 'put',
-                url: PRODUCT_URI + "/update",
+                url: PRODUCT_URI + "update",
                 data: product
             });
-            dispatch(productSuccess(response.data));
+            dispatch(success(response.data));
         } catch (error) {
             let errorMessage;
             if (error.response && error.response.data) errorMessage = error.response.data;
             else errorMessage = error.message;
-            dispatch(productFailure(errorMessage));
+            dispatch(failure(errorMessage));
         }
     };
 };
@@ -93,26 +93,46 @@ export const deleteProduct = (productId) => {
         try {
             const response = await authUser.makeAPIRequest({
                 method: 'delete',
-                url: PRODUCT_URI + "/" + productId
+                url: PRODUCT_URI + productId
             });
-            dispatch(productSuccess(response.data));
+            dispatch(success(response.data));
         } catch (error) {
             let errorMessage;
             if (error.response && error.response.data) errorMessage = error.response.data;
             else errorMessage = error.message;
-            dispatch(productFailure(errorMessage));
+            dispatch(failure(errorMessage));
         }
     };
 };
 
-const productSuccess = (product) => {
+export const deleteAllPurchasedProducts = (listId) => {
+    return async (dispatch) => {
+        dispatch({
+            type: UT.DELETE_PRODUCT_REQUEST,
+        });
+        try {
+            const response = await authUser.makeAPIRequest({
+                method: 'put',
+                url: PRODUCT_URI + listId + "/delPurchased"
+            });
+            dispatch(success(response.data));
+        } catch (error) {
+            let errorMessage;
+            if (error.response && error.response.data) errorMessage = error.response.data;
+            else errorMessage = error.message;
+            dispatch(failure(errorMessage));
+        }
+    };
+};
+
+const success = (product) => {
     return {
         type: UT.PRODUCT_SUCCESS,
         payload: product,
     };
 };
 
-const productFailure = (error) => {
+const failure = (error) => {
     return {
         type: UT.PRODUCT_FAILURE,
         payload: error,

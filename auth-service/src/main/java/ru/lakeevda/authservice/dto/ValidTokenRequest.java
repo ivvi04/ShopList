@@ -8,11 +8,10 @@ import lombok.Data;
 @Data
 @Schema(description = "Запрос на аутентификацию")
 public class ValidTokenRequest {
-
-    @Schema(description = "Имя пользователя", example = "Jon")
-    @Size(min = 5, max = 50, message = "Имя пользователя должно содержать от 5 до 50 символов")
-    @NotBlank(message = "Имя пользователя не может быть пустыми")
-    private String username;
+    @Schema(description = "Телефон", example = "89121234567")
+    @Size(min = 11, max = 11, message = "Длина телефона должна быть 11 символов")
+    @NotBlank(message = "Номер телефона не может быть пустыми")
+    private Integer phone;
 
     @Schema(description = "Токен доступа", example = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImV4cCI6MTYyMjUwNj...")
     private String token;

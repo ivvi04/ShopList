@@ -32,8 +32,8 @@ public class Product {
     @Column(name = "list_id", nullable = false)
     private long listId;
     @Basic
-    @Column(name = "image", nullable = true)
-    private byte[] image;
+    @Column(name = "image", nullable = true, length = -1)
+    private String image;
     @Basic
     @Column(name = "purchased", nullable = false)
     private boolean purchased;

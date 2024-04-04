@@ -33,19 +33,9 @@ const NavigationBar = () => {
     );
     const userLinks = (
         <>
-            <Nav className="mr-auto">
-                {/*<Link to={"add"} className="nav-link">*/}
-                {/*  Добавить список*/}
-                {/*</Link>*/}
-                {/*<Link to={"listlist"} className="nav-link">*/}
-                {/*  Списки*/}
-                {/*</Link>*/}
-                {/*<Link to={"users"} className="nav-link">*/}
-                {/*  User List*/}
-                {/*</Link>*/}
-            </Nav>
+            <Nav className="mr-auto"></Nav>
             <Nav className="navbar-right">
-                <Link to={"profile"} className="nav-link">
+                <Link to={"/user"} className="nav-link">
                     <FontAwesomeIcon icon={faUser}/> {login.username}
                 </Link>
                 <Link to={"/"} className="nav-link" onClick={logout}>

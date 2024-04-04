@@ -15,7 +15,7 @@ public class UserController {
 
     @GetMapping("/{phone}")
     public ResponseEntity<User> getUser(@PathVariable Integer phone) {
-        User user = userService.getUser(phone);
+        User user = userService.getUserByPhone(phone);
         return ResponseEntity.ok().body(user);
     }
 
@@ -25,9 +25,9 @@ public class UserController {
         return ResponseEntity.ok().body(userList);
     }
 
-    @PostMapping
-    public ResponseEntity<Void> updateUser(@RequestBody User user) {
-        userService.updateUser(user);
-        return ResponseEntity.ok().build();
+    @PutMapping("/update")
+    public ResponseEntity<User> updateUser(@RequestBody User user) {
+        User updateUser = userService.updateUser(user);
+        return ResponseEntity.ok().body(updateUser);
     }
 }

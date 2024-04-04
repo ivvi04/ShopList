@@ -33,12 +33,18 @@ public class UserService {
     }
 
     public User saveUser(User user) {
-        if (userRepository.existsByPhone(user.getPhone()))
-            throw new UserPhoneExistException("Пользователь с таким телефоном уже существует!");
-        if (userRepository.existsByEmail(user.getEmail()))
-            throw new UserEmailExistException("Пользователь с таким email уже существует!");
-        if (user.getUsername().isEmpty()) user.setUsername("user" + user.getId());
-        user.setRole(UserRole.USER);
+        return saveUser(user, true);
+    }
+
+    public User saveUser(User user, boolean checked) {
+        if (checked) {
+            if (userRepository.existsByPhone(user.getPhone()))
+                throw new UserPhoneExistException("Пользователь с таким телефоном уже существует!");
+            if (userRepository.existsByEmail(user.getEmail()))
+                throw new UserEmailExistException("Пользователь с таким email уже существует!");
+            if (user.getUsername().isEmpty()) user.setUsername("user" + user.getId());
+            user.setRole(UserRole.USER);
+        }
         return userRepository.save(user);
     }
 

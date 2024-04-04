@@ -1,79 +1,67 @@
 import React, {Component} from "react";
 import {connect} from "react-redux";
 import {
-    findList,
-    saveList,
-    updateList,
-    deleteList,
-    addUser,
-    deleteUser,
+    findProduct,
     saveProduct,
-    deleteProduct
+    updateProduct,
+    deleteProduct,
 } from "../../services/index";
 
-import {Alert, Button, ButtonGroup, Card, Row, Col, Form, FormControl, InputGroup, Table} from "react-bootstrap";
+import {
+    Alert,
+    Button,
+    Card,
+    Row,
+    Col,
+    Form, Image,
+} from "react-bootstrap";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {
+    faBackward,
     faEdit,
-    faList,
-    faPlus,
     faPlusSquare,
     faSave,
-    faTimes,
     faTrash,
 } from "@fortawesome/free-solid-svg-icons";
 import MyToast from "../MyToast";
-import * as authUser from "../../utils/authUser";
-import {Link} from "react-router-dom";
 
-class List extends Component {
+class Product extends Component {
     constructor(props) {
         super(props);
-        this.state = this.initialListState;
-        this.state = {
-            searchProduct: "",
-            products: [],
-            searchUser: "",
-            users: []
-        };
+        this.state = this.initialProductState;
     }
 
-    initialListState = {
+    initialProductState = {
         id: "",
         name: "",
-        phone: localStorage.userPhone,
-        products: [],
-        users: []
+        price: "",
+        url: "",
+        listId: "",
+        image: "",
+        purchased: false
     };
 
     componentDidMount() {
-        const listId = this.props.match.params.id;
-        if (listId) this.findListById(listId);
+        const productId = this.props.match.params.id;
+        if (productId) this.findProductById(productId);
     }
 
-    findListById = (listId) => {
-        this.props.findList(listId)
+    findProductById = (productId) => {
+        this.props.findProduct(productId)
             .then(() => {
-                const list = this.props.listObject.list;
-                if (list) {
+                const product = this.props.productObject.product;
+                if (product) {
                     this.setState({
-                        id: list.id,
-                        name: list.name,
-                        phone: list.phone,
-                        users: list.users
-                    });
-
-                    authUser.makeAPIRequest({
-                        method: 'get',
-                        url: "http://localhost:8765/product/" + listId + "/products"
+                        id: product.id,
+                        name: product.name,
+                        price: product.price,
+                        url: product.url,
+                        listId: product.listId,
+                        image: product.image,
+                        purchased: product.purchased
                     })
-                        .then((response) => {
-                            this.setState({
-                                products: response.data
-                            })
-                        })
                 } else {
-                    const error = this.props.listObject.error;
+                    const error = this.props.productObject.error;
                     if (error) {
                         this.setState({show: true});
                         this.setState({error: error});
@@ -88,26 +76,31 @@ class List extends Component {
             })
     };
 
-    resetList = () => {
-        this.setState(() => this.initialListState);
+    resetProduct = () => {
+        this.setState(() => this.initialProductState);
     };
 
-    submitList = (event) => {
+    submitProduct = (event) => {
         event.preventDefault();
 
-        const list = {
+        const product = {
+            id: this.state.id,
             name: this.state.name,
-            phone: localStorage.userPhone,
-            users: this.state.users
+            price: this.state.price,
+            url: this.state.url,
+            listId: this.state.listId,
+            image: this.state.image,
+            purchased: this.state.purchased
         };
-        this.props.saveList(list)
+
+        this.props.saveProduct(product)
             .then(() => {
-                const list = this.props.listObject.list;
-                const error = this.props.listObject.error;
-                if (list) {
+                const product = this.props.productObject.product;
+                const error = this.props.productObject.error;
+                if (product) {
                     this.setState({show: true});
-                    this.setState({message: "Список добавлен!"});
-                    this.listList();
+                    this.setState({message: "Продукт добавлен!"});
+                    this.toList();
                 }
                 if (error) {
                     this.setState({show: true});
@@ -120,28 +113,31 @@ class List extends Component {
                 this.setState({error: error.message})
                 setTimeout(() => this.setState({show: false}), 3000);
             })
-        // this.setState(this.initialListState);
     };
 
-    updateList = (event) => {
+    updateProduct = (event) => {
         event.preventDefault();
 
-        const list = {
+        const product = {
             id: this.state.id,
             name: this.state.name,
-            phone: this.state.phone,
-            users: this.state.users,
+            price: this.state.price,
+            url: this.state.url,
+            listId: this.state.listId,
+            image: this.state.image,
+            purchased: this.state.purchased
         };
-        this.props.updateList(list)
+
+        this.props.updateProduct(product)
             .then(() => {
-                    const error = this.props.listObject.error;
+                    const error = this.props.productObject.error;
                     this.setState({show: true});
                     if (error) {
                         this.setState({error: error});
-                        this.findListById(this.state.id);
+                        this.findProductById(this.state.id);
                     } else {
-                        this.setState({message: "Список обновлен!"});
-                        this.listList();
+                        this.setState({message: "Продукт обновлен!"});
+                        this.toList();
                     }
                     setTimeout(() => this.setState({show: false}), 3000);
                 }
@@ -151,18 +147,17 @@ class List extends Component {
                 this.setState({error: error.message})
                 setTimeout(() => this.setState({show: false}), 3000);
             });
-        // this.setState(this.initialListState);
     };
 
-    deleteList = (listId) => {
-        this.props.deleteList(listId)
+    deleteProduct = (productId) => {
+        this.props.deleteProduct(productId)
             .then(() => {
-                    const error = this.props.listObject.error;
+                    const error = this.props.productObject.error;
                     this.setState({show: true});
                     if (error) this.setState({error: error});
                     else {
-                        this.setState({message: "Список удален!"});
-                        this.listList();
+                        this.setState({message: "Продукт удален!"});
+                        this.toList();
                     }
                     setTimeout(() => this.setState({show: false}), 3000);
                 }
@@ -174,177 +169,33 @@ class List extends Component {
             });
     };
 
-    listChange = (event) => {
-        this.setState({
-            [event.target.name]: event.target.value,
-        });
-    };
-
-    listList = () => {
-        this.props.history.push("/lists");
-    };
-
-    searchChange = (event) => {
-        const target = event.target;
-        let value = target.value;
-        if (target.name === "searchUser") value = target.value.slice(0, 11);
-
-        this.setState({
-            [target.name]: value,
-        });
-    };
-
-    cancelSearch = (name) => {
-        this.setState({
-            [name]: "",
-        });
-    };
-
-    addUser = () => {
-        authUser.makeAPIRequest({
-            method: 'get',
-            url: "http://localhost:8765/user/" + this.state.searchUser
-            // + "/users"
-        })
-            .then((response) => {
-                const filterList = this.state.users.filter(item => item.phone === response.data.phone);
-                if (filterList.length === 0 && response.data.phone !== localStorage.userPhone) {
-                    this.props.addUser(this.state.id, response.data.phone)
-                        .then(() => {
-                            const error = this.props.listObject.error;
-                            if (error) {
-                                this.setState({show: true});
-                                this.setState({error: error});
-                                setTimeout(() => this.setState({show: false}), 3000);
-                            } else {
-                                this.setState(state => {
-                                    const list = state.users.concat(response.data);
-                                    return {users: list}
-                                })
-                            }
-                        })
-                        .catch((error) => {
-                            this.setState({show: true});
-                            this.setState({error: error.message})
-                            setTimeout(() => this.setState({show: false}), 3000);
-                        })
-                }
-                this.cancelSearch("searchUser");
-            })
-            .catch((error) => {
-                let errorMessage;
-                if (error.response && error.response.data) errorMessage = error.response.data;
-                else errorMessage = error.message;
-                this.setState({show: true});
-                this.setState({error: errorMessage});
-                this.cancelSearch("searchUser");
-                setTimeout(() => this.setState({show: false}), 3000);
+    productChange = (event) => {
+        if (event.target.name === "purchased") {
+            this.setState({
+                [event.target.name]: event.target.checked,
             });
+        } else if (event.target.name === "image") {
+            const file = event.target.files[0];
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => {
+                this.setState({
+                    [event.target.name]: reader.result,
+                });
+            };
+        } else {
+            this.setState({
+                [event.target.name]: event.target.value,
+            });
+        }
     };
 
-    deleteUser = (userPhone) => {
-        if (this.state.id) this.props.deleteUser(this.state.id, userPhone)
-            .then(() => {
-                const error = this.props.listObject.error;
-                if (error) {
-                    this.setState({show: true});
-                    this.setState({error: error});
-                    setTimeout(() => this.setState({show: false}), 3000);
-                } else {
-                    this.setState(state => {
-                        const filterList = state.users.filter(item => item.phone !== userPhone);
-                        return {users: filterList}
-                    })
-                    const filterList = this.state.users.filter(item => item.phone === userPhone);
-                    if (filterList.length === 0 && this.state.phone !== localStorage.userPhone) this.listList();
-                }
-            })
-            .catch((error) => {
-                this.setState({show: true});
-                this.setState({error: error.message})
-                setTimeout(() => this.setState({show: false}), 3000);
-            })
-    };
-
-    addProduct = (event) => {
-        event.preventDefault();
-        const product = {
-            name: this.state.searchProduct,
-            price: null,
-            url: null,
-            listId: this.state.id,
-            image: null,
-            purchased: false
-        };
-        authUser.makeAPIRequest({
-            method: 'get',
-            url: "http://localhost:8765/product/" + this.state.id + "/products"
-        })
-            .then((response) => {
-                const filterList = response.data.filter(item => item.name === this.state.searchProduct);
-                if (filterList.length === 0) {
-                    this.props.saveProduct(product)
-                        .then(() => {
-                            const newProduct = this.props.productObject.product;
-                            if (newProduct) {
-                                this.setState(state => {
-                                    const list = state.products.concat(newProduct);
-                                    return {products: list}
-                                })
-                            } else {
-                                const error = this.props.productObject.error;
-                                if (error) {
-                                    this.setState({show: true});
-                                    this.setState({error: error});
-                                    setTimeout(() => this.setState({show: false}), 3000);
-                                }
-                            }
-                        })
-                        .catch((error) => {
-                            this.setState({show: true});
-                            this.setState({error: error.message})
-                            setTimeout(() => this.setState({show: false}), 3000);
-                        })
-                }
-                this.cancelSearch("searchProduct");
-            })
-            .catch((error) => {
-                let errorMessage;
-                if (error.response && error.response.data) errorMessage = error.response.data;
-                else errorMessage = error.message;
-                this.setState({show: true});
-                this.setState({error: errorMessage})
-                this.cancelSearch("searchProduct");
-                setTimeout(() => this.setState({show: false}), 3000);
-            })
-        ;
-    }
-    ;
-
-    deleteProduct = (productId) => {
-        if (this.state.id) this.props.deleteProduct(productId)
-            .then(() => {
-                const error = this.props.productObject.error;
-                if (error) {
-                    this.setState({show: true});
-                    this.setState({error: error});
-                    setTimeout(() => this.setState({show: false}), 3000);
-                } else {
-                    this.setState(state => {
-                        const filterList = state.products.filter(item => item.id !== productId);
-                        return {products: filterList}
-                    })
-                }
-            })
-            .catch((error) => {
-                this.setState({show: true});
-                this.setState({error: error.message})
-                setTimeout(() => this.setState({show: false}), 3000);
-            })
+    toList = () => {
+        this.props.history.push("/list/edit/" + this.state.listId);
     };
 
     render() {
-        const {name, searchProduct, products, searchUser, users} = this.state;
+        const {name, price, url, image, purchased} = this.state;
 
         return (
             <div>
@@ -361,187 +212,130 @@ class List extends Component {
                     </Alert>
                 )}
 
-                {/*<div style={{display: this.state.show ? "block" : "none"}}>*/}
-                {/*    <MyToast*/}
-                {/*        show={this.state.show}*/}
-                {/*        message={*/}
-                {/*            this.state.method === "put"*/}
-                {/*                ? "List Updated Successfully."*/}
-                {/*                : "List Saved Successfully."*/}
-                {/*        }*/}
-                {/*        type={"success"}*/}
-                {/*    />*/}
-                {/*</div>*/}
                 <Card className={"border border-dark bg-dark text-white"}>
                     <Form
-                        onSubmit={this.state.id ? this.updateList : this.submitList}
-                        onReset={this.resetList}
-                        id="listFormId"
+                        onSubmit={this.state.id ? this.updateProduct : this.submitProduct}
+                        onReset={this.resetProduct}
+                        id="productFormId"
                     >
-                        <Card.Header>
-                            <FontAwesomeIcon icon={this.state.id ? faEdit : faPlusSquare}/>{" "}
-                            {this.state.id ? "Редактирование списка" : "Добавление списка"}
+                        <Card.Header style={{height: "50px"}}>
+                            <div style={{float: "left"}}>
+                                <FontAwesomeIcon icon={this.state.id ? faEdit : faPlusSquare}/>{" "}
+                                {this.state.id ? "Редактирование" : "Добавление"}
+                            </div>
+                            <div style={{float: "right"}}>
+                                <Button size="sm" variant="outline-info" onClick={this.toList}>
+                                    <FontAwesomeIcon icon={faBackward}/>
+                                </Button>{" "}
+                                <Button size="sm" variant="success" type="submit">
+                                    <FontAwesomeIcon icon={faSave}/>{" "}
+                                </Button>{" "}
+                                <Button size="sm" variant="outline-danger"
+                                        onClick={() => this.deleteProduct(this.state.id)}>
+                                    <FontAwesomeIcon icon={faTrash}/>
+                                </Button>{" "}
+                            </div>
                         </Card.Header>
                         <Card.Body>
                             <Row>
-                                <Form.Group as={Col} controlId="formGridName">
-                                    <Form.Control
-                                        required
-                                        autoComplete="off"
-                                        type="text"
-                                        name="name"
-                                        value={name || ''}
-                                        onChange={this.listChange}
-                                        className={"bg-dark text-white"}
-                                        placeholder="Введите название списка"
-                                    />
-                                </Form.Group>
-                            </Row>
-                            <Row>
-                                <Col>
-                                    {/*<div style={{float: "left"}}>*/}
-                                    <FontAwesomeIcon icon={faList}/> Список продуктов
-                                    <InputGroup size="sm">
-                                        <FormControl
-                                            placeholder="Добавить продукт"
-                                            name="searchProduct"
-                                            value={searchProduct || ''}
-                                            type='text'
-                                            className={"info-border bg-dark text-white"}
-                                            onChange={this.searchChange}
+                                <Col xs={6} md={4}>
+                                    <Form.Group controlId="formGridImage">
+                                        {image ?
+                                            (<Image alt="preview image" src={image}
+                                                    style={{
+                                                        width: "300px",
+                                                        borderRadius: '10%',
+                                                        overflow: 'hidden',
+                                                        borderWidth: 3,
+                                                        borderColor: 'grey',
+                                                    }}
+                                            />)
+                                            : (
+                                                <div>
+                                                    <canvas
+                                                        style={{
+                                                            width: "300px",
+                                                            height: "300px",
+                                                            background: "grey",
+                                                            borderRadius: '10%'
+                                                        }}
+                                                    />
+                                                </div>
+                                            )}
+                                        <Form.Control
+                                            autoComplete="off"
+                                            type="file"
+                                            name="image"
+                                            onChange={this.productChange}
+                                            className={"bg-dark text-white"}
+                                            placeholder="Изображение продукта"
+                                            custom="true"
+                                            style={{width: "300px"}}
                                         />
-                                        <InputGroup.Append>
-                                            <Button
-                                                size="sm"
-                                                variant="outline-success"
-                                                type="button"
-                                                onClick={this.addProduct}
-                                            >
-                                                <FontAwesomeIcon icon={faPlus}/>
-                                            </Button>
-                                            <Button
-                                                size="sm"
-                                                variant="outline-danger"
-                                                type="button"
-                                                onClick={() => this.cancelSearch("searchProduct")}
-                                            >
-                                                <FontAwesomeIcon icon={faTimes}/>
-                                            </Button>
-
-                                        </InputGroup.Append>
-                                    </InputGroup>
-
-                                    <Table bordered hover striped variant="dark">
-                                        <tbody>
-                                        {!products || products.length === 0 ? (
-                                            <tr align="center">
-                                                <td colSpan="7">Список продуктов пуст</td>
-                                            </tr>
-                                        ) : (
-                                            products.map((product) => (
-                                                <tr key={product.id}>
-                                                    <td>{product.name}</td>
-                                                    <td style={{width: '50px'}}>
-                                                        <ButtonGroup>
-                                                            {/*<Button*/}
-                                                            {/*    size="sm"*/}
-                                                            {/*    variant="outline-danger"*/}
-                                                            {/*    onClick={() => this.editProduct(product.id)}*/}
-                                                            {/*>*/}
-                                                            {/*    <FontAwesomeIcon icon={faEdit}/>*/}
-                                                            {/*</Button>*/}
-                                                            <Link
-                                                                to={"product/edit/" + product.id}
-                                                                className="btn btn-sm btn-outline-primary"
-                                                            >
-                                                                <FontAwesomeIcon icon={faEdit}/>
-                                                            </Link>{" "}
-                                                            <Button
-                                                                size="sm"
-                                                                variant="outline-danger"
-                                                                onClick={() => this.deleteProduct(product.id)}
-                                                            >
-                                                                <FontAwesomeIcon icon={faTrash}/>
-                                                            </Button>
-                                                        </ButtonGroup>
-                                                    </td>
-                                                </tr>
-                                            ))
-                                        )}
-                                        </tbody>
-                                    </Table>
+                                    </Form.Group>
                                 </Col>
                                 <Col>
-                                    <FontAwesomeIcon icon={faList}/> Список пользователей
-                                    <InputGroup size="sm">
-                                        <FormControl
-                                            placeholder="Добавить пользователя по номеру телефона"
-                                            name="searchUser"
-                                            value={searchUser || ''}
-                                            type='number'
-                                            className={"info-border bg-dark text-white"}
-                                            onChange={this.searchChange}
-                                            maxLength={10}
-                                        />
-                                        <InputGroup.Append>
-                                            <Button
-                                                size="sm"
-                                                variant="outline-success"
-                                                type="button"
-                                                onClick={this.addUser}
-                                            >
-                                                <FontAwesomeIcon icon={faPlus}/>
-                                            </Button>
-                                            <Button
-                                                size="sm"
-                                                variant="outline-danger"
-                                                type="button"
-                                                onClick={() => this.cancelSearch("searchUser")}
-                                            >
-                                                <FontAwesomeIcon icon={faTimes}/>
-                                            </Button>
-                                        </InputGroup.Append>
-                                    </InputGroup>
-
-                                    <Table bordered hover striped variant="dark">
-                                        <tbody>
-                                        {!users || users.length === 0 ? (
-                                            <tr align="center">
-                                                <td colSpan="7">Список пользователей пуст</td>
-                                            </tr>
-                                        ) : (
-                                            users.map((user) => (
-                                                <tr key={user.id}>
-                                                    <td>{user.username}</td>
-                                                    <td>{user.phone}</td>
-                                                    <td style={{width: '50px'}}>
-                                                        <ButtonGroup>
-                                                            <Button
-                                                                size="sm"
-                                                                variant="outline-danger"
-                                                                onClick={() => this.deleteUser(user.phone)}
-                                                            >
-                                                                <FontAwesomeIcon icon={faTrash}/>
-                                                            </Button>
-                                                        </ButtonGroup>
-                                                    </td>
-                                                </tr>
-                                            ))
-                                        )}
-                                        </tbody>
-                                    </Table>
+                                    <Form.Group as={Row} controlId="formGridName">
+                                        <Form.Label column sm="3">Название продукта</Form.Label>
+                                        <Col sm="9">
+                                            <Form.Control
+                                                required
+                                                autoComplete="off"
+                                                type="text"
+                                                name="name"
+                                                value={name || ''}
+                                                onChange={this.productChange}
+                                                className={"bg-dark text-white"}
+                                                placeholder="Название продукта"
+                                            />
+                                        </Col>
+                                    </Form.Group>
+                                    <Form.Group as={Row} controlId="formGridPrice">
+                                        <Form.Label column sm="3">Стоимость продукта</Form.Label>
+                                        <Col sm="6">
+                                            <Form.Control
+                                                autoComplete="off"
+                                                type="number"
+                                                name="price"
+                                                value={price || ''}
+                                                onChange={this.productChange}
+                                                className={"bg-dark text-white"}
+                                                placeholder="Стоимость продукта"
+                                            />
+                                        </Col>
+                                    </Form.Group>
+                                    <Form.Group as={Row} controlId="formGridUrl">
+                                        <Form.Label column sm="3">Ссылка</Form.Label>
+                                        <Col sm="9">
+                                            <Form.Control
+                                                autoComplete="off"
+                                                type="text"
+                                                name="url"
+                                                value={url || ''}
+                                                onChange={this.productChange}
+                                                className={"bg-dark text-white"}
+                                                placeholder="Ссылка"
+                                            />
+                                        </Col>
+                                    </Form.Group>
+                                    <Form.Group as={Row} controlId="formGridPurchased">
+                                        <Col sm="9">
+                                            <Form.Check
+                                                type="checkbox"
+                                                name="purchased"
+                                                custom={true}
+                                                checked={purchased}
+                                                onChange={this.productChange}
+                                                className={"bg-dark text-white"}
+                                                label="Куплен"
+                                            />
+                                        </Col>
+                                    </Form.Group>
                                 </Col>
                             </Row>
                         </Card.Body>
                         <Card.Footer style={{textAlign: "right"}}>
-                            <Button size="sm" variant="success" type="submit">
-                                <FontAwesomeIcon icon={faSave}/>{" "}
-                            </Button>{" "}
-                            <Button size="sm" variant="outline-danger" onClick={() => this.deleteList(this.state.id)}>
-                                <FontAwesomeIcon icon={faTrash}/>
-                            </Button>{" "}
                         </Card.Footer>
-
                     </Form>
                 </Card>
             </div>
@@ -551,22 +345,17 @@ class List extends Component {
 
 const mapStateToProps = (state) => {
     return {
-        listObject: state.list,
         productObject: state.product,
     };
 };
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        findList: (listId) => dispatch(findList(listId)),
-        saveList: (list) => dispatch(saveList(list)),
-        updateList: (list) => dispatch(updateList(list)),
-        deleteList: (listId) => dispatch(deleteList(listId)),
-        addUser: (listId, userPhone) => dispatch(addUser(listId, userPhone)),
-        deleteUser: (listId, userPhone) => dispatch(deleteUser(listId, userPhone)),
+        findProduct: (productId) => dispatch(findProduct(productId)),
         saveProduct: (product) => dispatch(saveProduct(product)),
-        deleteProduct: (productId) => dispatch(deleteProduct(productId))
+        updateProduct: (product) => dispatch(updateProduct(product)),
+        deleteProduct: (productId) => dispatch(deleteProduct(productId)),
     };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(List);
+export default connect(mapStateToProps, mapDispatchToProps)(Product);

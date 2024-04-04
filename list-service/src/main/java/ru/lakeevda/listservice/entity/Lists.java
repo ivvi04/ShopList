@@ -22,7 +22,7 @@ public class Lists {
     @Column(name = "id", nullable = false)
     private long id;
     @Basic
-    @Column(name = "name", nullable = false, length = 100)
+    @Column(name = "name", nullable = false, length = -1)
     private String name;
     @Basic
     @Column(name = "author_id", nullable = false)

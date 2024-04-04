@@ -8,12 +8,14 @@ import {
     addUser,
     deleteUser,
     saveProduct,
-    deleteProduct
+    updateProduct,
+    deleteProduct, deleteAllPurchasedProducts
 } from "../../services/index";
 
 import {Alert, Button, ButtonGroup, Card, Row, Col, Form, FormControl, InputGroup, Table} from "react-bootstrap";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {
+    faBackward,
     faEdit,
     faList,
     faPlus,
@@ -107,7 +109,7 @@ class List extends Component {
                 if (list) {
                     this.setState({show: true});
                     this.setState({message: "Список добавлен!"});
-                    this.listList();
+                    this.toList();
                 }
                 if (error) {
                     this.setState({show: true});
@@ -156,7 +158,7 @@ class List extends Component {
                     if (error) this.setState({error: error});
                     else {
                         this.setState({message: "Список удален!"});
-                        this.listList();
+                        this.toList();
                     }
                     setTimeout(() => this.setState({show: false}), 3000);
                 }
@@ -174,7 +176,7 @@ class List extends Component {
         });
     };
 
-    listList = () => {
+    toList = () => {
         this.props.history.push("/list");
     };
 
@@ -198,7 +200,6 @@ class List extends Component {
         authUser.makeAPIRequest({
             method: 'get',
             url: "http://localhost:8765/user/" + this.state.searchUser
-            // + "/users"
         })
             .then((response) => {
                 const filterList = this.state.users.filter(item => item.phone === response.data.phone);
@@ -250,7 +251,7 @@ class List extends Component {
                         return {users: filterList}
                     })
                     const filterList = this.state.users.filter(item => item.phone === userPhone);
-                    if (filterList.length === 0 && this.state.phone !== localStorage.userPhone) this.listList();
+                    if (filterList.length === 0 && this.state.phone !== localStorage.userPhone) this.toList();
                 }
             })
             .catch((error) => {
@@ -311,9 +312,7 @@ class List extends Component {
                 this.cancelSearch("searchProduct");
                 setTimeout(() => this.setState({show: false}), 3000);
             })
-        ;
     }
-    ;
 
     deleteProduct = (productId) => {
         if (this.state.id) this.props.deleteProduct(productId)
@@ -335,6 +334,41 @@ class List extends Component {
                 this.setState({error: error.message})
                 setTimeout(() => this.setState({show: false}), 3000);
             })
+    };
+
+    deleteAllPurchasedProducts = () => {
+        if (this.state.id) this.props.deleteAllPurchasedProducts(this.state.id)
+            .then(() => {
+                const error = this.props.productObject.error;
+                if (error) {
+                    this.setState({show: true});
+                    this.setState({error: error});
+                    setTimeout(() => this.setState({show: false}), 3000);
+                } else {
+                    this.setState(state => {
+                        const filterList = state.products.filter(item => !item.purchased);
+                        return {products: filterList}
+                    })
+                }
+            })
+            .catch((error) => {
+                this.setState({show: true});
+                this.setState({error: error.message})
+                setTimeout(() => this.setState({show: false}), 3000);
+            })
+    };
+
+    productPurchased = (productId, purchased) => {
+        this.setState(state => {
+            const list = state.products.map(product => {
+                if (product.id === productId) {
+                    product.purchased = purchased;
+                    this.props.updateProduct(product);
+                    return product;
+                } else return product;
+            })
+            return {products: list}
+        })
     };
 
     render() {
@@ -361,9 +395,24 @@ class List extends Component {
                         onReset={this.resetList}
                         id="listFormId"
                     >
-                        <Card.Header>
-                            <FontAwesomeIcon icon={this.state.id ? faEdit : faPlusSquare}/>{" "}
-                            {this.state.id ? "Редактирование списка" : "Добавление списка"}
+                        <Card.Header style={{height: "50px"}}>
+                            <div style={{float: "left"}}>
+                                <FontAwesomeIcon icon={this.state.id ? faEdit : faPlusSquare}/>{" "}
+                                {this.state.id ? "Редактирование" : "Добавление"}
+
+                            </div>
+                            <div style={{float: "right"}}>
+                                <Button size="sm" variant="outline-info" onClick={this.toList}>
+                                    <FontAwesomeIcon icon={faBackward}/>
+                                </Button>{" "}
+                                <Button size="sm" variant="success" type="submit">
+                                    <FontAwesomeIcon icon={faSave}/>{" "}
+                                </Button>{" "}
+                                <Button size="sm" variant="outline-danger"
+                                        onClick={() => this.deleteList(this.state.id)}>
+                                    <FontAwesomeIcon icon={faTrash}/>
+                                </Button>{" "}
+                            </div>
                         </Card.Header>
                         <Card.Body>
                             <Row>
@@ -404,13 +453,20 @@ class List extends Component {
                                             </Button>
                                             <Button
                                                 size="sm"
-                                                variant="outline-danger"
+                                                variant="outline-warning"
                                                 type="button"
                                                 onClick={() => this.cancelSearch("searchProduct")}
                                             >
                                                 <FontAwesomeIcon icon={faTimes}/>
                                             </Button>
-
+                                            <Button
+                                                size="sm"
+                                                variant="outline-danger"
+                                                type="button"
+                                                onClick={() => this.deleteAllPurchasedProducts()}
+                                            >
+                                                <FontAwesomeIcon icon={faTrash}/>
+                                            </Button>
                                         </InputGroup.Append>
                                     </InputGroup>
 
@@ -423,11 +479,18 @@ class List extends Component {
                                         ) : (
                                             products.map((product) => (
                                                 <tr key={product.id}>
-                                                    <td>{product.name}</td>
-                                                    <td style={{width: '50px'}}>
+                                                    <td style={{width: '10%'}}>
+                                                        <input type="checkbox"
+                                                               checked={product.purchased}
+                                                               onChange={() => this.productPurchased(product.id, !(product.purchased))}
+                                                    /></td>
+                                                    <td style={{width: '70%'}}>{product.name}</td>
+                                                    <td style={{width: '10%'}}>{product.url ? (
+                                                        <a href={product.url} target="noopener noreferrer">Ссылка</a>) : ("")}</td>
+                                                    <td style={{width: '10%'}}>
                                                         <ButtonGroup>
                                                             <Link
-                                                                to={"product/edit/" + product.id}
+                                                                to={"/product/edit/" + product.id}
                                                                 className="btn btn-sm btn-outline-primary"
                                                             >
                                                                 <FontAwesomeIcon icon={faEdit}/>
@@ -470,7 +533,7 @@ class List extends Component {
                                             </Button>
                                             <Button
                                                 size="sm"
-                                                variant="outline-danger"
+                                                variant="outline-warning"
                                                 type="button"
                                                 onClick={() => this.cancelSearch("searchUser")}
                                             >
@@ -488,8 +551,8 @@ class List extends Component {
                                         ) : (
                                             users.map((user) => (
                                                 <tr key={user.id}>
-                                                    <td>{user.username}</td>
-                                                    <td>{user.phone}</td>
+                                                    <td style={{width: '40%'}}>{user.username}</td>
+                                                    <td style={{width: '60%'}}>{user.phone}</td>
                                                     <td style={{width: '50px'}}>
                                                         <ButtonGroup>
                                                             <Button
@@ -510,14 +573,7 @@ class List extends Component {
                             </Row>
                         </Card.Body>
                         <Card.Footer style={{textAlign: "right"}}>
-                            <Button size="sm" variant="success" type="submit">
-                                <FontAwesomeIcon icon={faSave}/>{" "}
-                            </Button>{" "}
-                            <Button size="sm" variant="outline-danger" onClick={() => this.deleteList(this.state.id)}>
-                                <FontAwesomeIcon icon={faTrash}/>
-                            </Button>{" "}
                         </Card.Footer>
-
                     </Form>
                 </Card>
             </div>
@@ -541,7 +597,9 @@ const mapDispatchToProps = (dispatch) => {
         addUser: (listId, userPhone) => dispatch(addUser(listId, userPhone)),
         deleteUser: (listId, userPhone) => dispatch(deleteUser(listId, userPhone)),
         saveProduct: (product) => dispatch(saveProduct(product)),
-        deleteProduct: (productId) => dispatch(deleteProduct(productId))
+        updateProduct: (product) => dispatch(updateProduct(product)),
+        deleteProduct: (productId) => dispatch(deleteProduct(productId)),
+        deleteAllPurchasedProducts: (listId) => dispatch(deleteAllPurchasedProducts(listId))
     };
 };
 

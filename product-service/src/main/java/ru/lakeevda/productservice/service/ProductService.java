@@ -9,6 +9,7 @@ import ru.lakeevda.productservice.exception.DataNotFoundException;
 import ru.lakeevda.productservice.exception.ProductExistException;
 import ru.lakeevda.productservice.repository.ProductRepository;
 
+import java.util.Arrays;
 import java.util.List;
 
 @Service
