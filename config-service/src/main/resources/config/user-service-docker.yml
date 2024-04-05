@@ -5,7 +5,7 @@ server:
 eureka:
   client:
     serviceUrl:
-      defaultZone: http://localhost:8761/eureka/
+      defaultZone: http://server-service:8761/eureka/
   instance:
     hostname: user-service
     InstanceId: ${spring.application.name}:${random.uuid}
@@ -23,7 +23,7 @@ springdoc:
 
 spring:
   datasource:
-    url: "jdbc:postgresql://localhost:5432/shoplist"
+    url: "jdbc:postgresql://localhost:5433/shoplist"
     driverClassName: "org.postgresql.Driver"
     username: postgres
     password: postgres

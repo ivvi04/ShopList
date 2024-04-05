@@ -1,0 +1,47 @@
+version: '3.9'
+
+services:
+  postgres:
+    image: 'postgres:15.6-alpine3.19'
+    container_name: 'shop-list-db'
+    ports:
+      - 5433:5432
+    volumes:
+#      - postgres_data:/var/lib/postgresql/data
+      - ./schema.sql:/docker-entrypoint-initdb.d/schema.sql
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_HOST_AUTH_METHOD=trust
+      - POSTGRES_DB=shoplist
+
+  config-service:
+    image: registry.hub.docker.com/ivvi04/config-service
+    volumes:
+      - ./config-data:/var/config-data
+    environment:
+      - JAVA_OPTS=
+        -DEUREKA_SERVER=http://server-service:8761/eureka
+        -Dspring.cloud.config.server.native.searchLocations=/var/config-data
+    ports:
+      - 8888:8888
+    depends_on:
+      - postgres
+
+  server-service:
+    image: developer.okta.com/microservice-docker-server-service:0.0.1-SNAPSHOT
+    ports:
+      - 8761:8761
+    depends_on:
+      - postgres
+      - config-service
+
+  auth-service:
+    image: developer.okta.com/microservice-docker-auth-service:0.0.1-SNAPSHOT
+    environment:
+      - JAVA_OPTS=
+        -DEUREKA_SERVER=http://server-service:8761/eureka
+    depends_on:
+      - postgres
+      - config-service
+      - server-service

@@ -3,7 +3,6 @@ server:
 spring:
   profiles:
     active: native
-
 ##формат вывода логов
 #logging:
 #  pattern:

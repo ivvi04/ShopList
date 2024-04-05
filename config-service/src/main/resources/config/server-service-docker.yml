@@ -1,0 +1,38 @@
+
+server:
+  port: 8761
+
+eureka:
+  instance:
+#    hostname: server-service
+    preferIpAddress: true
+    leaseRenewalIntervalInSeconds: 30
+    leaseExpirationDurationInSeconds: 30
+#т.к. это не клиент, то убираем лишние настройки
+  client:
+    registerWithEureka: false
+    fetchRegistry: false
+#url, куда будет происходить регисрация микросервисов и другие важные действия
+    serviceUrl:
+      defaultZone: http://${eureka.instance.hostname}:${server.port}/eureka/
+
+##формат вывода логов
+#logging:
+#  pattern:
+#    console: "%d{yyyy-MM-dd HH:mm:ss} [%X{traceId:-},%X{spanId:-}] ${LOG_LEVEL_PATTERN:-%5p} %m%n"
+
+#  server:
+#    enableSelfPreservation: false
+
+    # Make sure this is set to the same value as the lease renewal interval in Eureka _client_ instances (or slightly higher)
+    # This value is relevant for Eureka's calculation of the 'current renewal threshold'.
+    # Specifically, the following equation is used: current renewal threshold = (60s / expected-client-renewal-interval-seconds) * renewal-percent-threshold * current number of client instances.
+    # In this case:
+    # - for one registered client: 60 / 3 * 0.5 * 1 = 10.
+    # - for two registered clients: 60 / 3 * 0,5 * 2 = 20.
+    # As soon as two clients are connected:
+#    expectedClientRenewalIntervalSeconds: 40
+
+    # The interval in which the instance eviction task scans for instances with expired leases.
+    # Given in milliseconds.
+#    evictionIntervalTimerInMs: 2000

@@ -1,0 +1,77 @@
+server:
+  port: 8765
+
+#url, куда будет происходить регисрация микросервисов и другие важные действия
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://server-service:8761/eureka/
+  instance:
+    hostname: gateway-service
+    preferIpAddress: true
+#    leaseRenewalIntervalInSeconds: 5
+#    leaseExpirationDurationInSeconds: 2
+
+##формат вывода логов
+#logging:
+#  pattern:
+#    console: "%d{yyyy-MM-dd HH:mm:ss} [%X{traceId:-},%X{spanId:-}] ${LOG_LEVEL_PATTERN:-%5p} %m%n"
+
+#для корректной работы api gateway
+spring:
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+      routes:
+        - id: auth-service
+          uri: lb://auth-service
+          predicates:
+            - Path=/auth/**
+          filters:
+            - RewritePath=/auth/(?<path>.*), /$\{path}
+        - id: web-client
+          uri: lb://web-client
+          predicates:
+            - Path=/web-client/**
+          filters:
+            - AuthenticationFilter
+            - RewritePath=/web-client/(?<path>.*), /$\{path}
+        - id: user-service
+          uri: lb://user-service
+          predicates:
+            - Path=/user/**
+          filters:
+            - AuthenticationFilter
+            - RewritePath=/user/(?<path>.*), /$\{path}
+        - id: list-service
+          uri: lb://list-service
+          predicates:
+            - Path=/list/**
+          filters:
+            - AuthenticationFilter
+            - RewritePath=/list/(?<path>.*), /$\{path}
+        - id: product-service
+          uri: lb://product-service
+          predicates:
+            - Path=/product/**
+          filters:
+            - AuthenticationFilter
+            - RewritePath=/product/(?<path>.*), /$\{path}
+        - id: openapi
+          uri: http://localhost:${server.port}
+          predicates:
+            - Path=/v3/api-docs/**
+          filters:
+            - RewritePath=/v3/api-docs/(?<path>.*), /$\{path}/v3/api-docs
+
+springdoc:
+  swagger-ui:
+    urls:
+      - name: user
+        url: /v3/api-docs/user
+      - name: list
+        url: /v3/api-docs/list
+      - name: product
+        url: /v3/api-docs/product
