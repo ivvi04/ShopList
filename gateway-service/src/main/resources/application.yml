@@ -5,7 +5,18 @@ spring:
     name: gateway-service
   config:
     import: "optional:configserver:http://localhost:8888"
-
+logging:
+  level:
+    com.netflix.discovery.shared.resolver.aws.ConfigClusterResolver: WARN
+---
+#id приложения = желательно указывать всегда в микросервисных приложениях
+spring:
+  application:
+    name: gateway-service
+  config:
+    import: "optional:configserver:http://config-service:8888"
+    activate:
+      on-profile: docker
 logging:
   level:
     com.netflix.discovery.shared.resolver.aws.ConfigClusterResolver: WARN

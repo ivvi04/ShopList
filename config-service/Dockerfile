@@ -1,13 +1,10 @@
-FROM openjdk:17-oracle
-ENV APP_FILE config-service-0.0.1-SNAPSHOT.jar
-ENV APP_HOME /app
-EXPOSE 8888
-COPY target/$APP_FILE $APP_HOME/
-WORKDIR $APP_HOME
-ENTRYPOINT ["sh", "-c"]
-CMD ["exec java -jar $APP_FILE"]
+FROM maven:latest as builder
+RUN mkdir /config-service
+WORKDIR /config-service
+COPY . .
+#RUN mvn clean install
+RUN mvn clean package -DskipTests -q
 
-#FROM openjdk:17-oracle
-#ADD target/*.jar myapplication
-#ENTRYPOINT ["java", "-jar","config-service"]
-#EXPOSE 8080
+FROM openjdk:17-oracle
+COPY --from=builder /config-service/target/config-service-0.0.1-SNAPSHOT.jar config-service.jar
+CMD ["java","-jar","config-service.jar"]

@@ -4,7 +4,7 @@ server:
 
 eureka:
   instance:
-#    hostname: server-service
+    hostname: server-service
     preferIpAddress: true
     leaseRenewalIntervalInSeconds: 30
     leaseExpirationDurationInSeconds: 30

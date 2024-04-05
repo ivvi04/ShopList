@@ -23,7 +23,7 @@ springdoc:
 
 spring:
   datasource:
-    url: "jdbc:postgresql://localhost:5433/shoplist"
+    url: "jdbc:postgresql://shop-list-db:5432/shoplist"
     driverClassName: "org.postgresql.Driver"
     username: postgres
     password: postgres

@@ -1,47 +1,157 @@
 version: '3.9'
 
 services:
-  postgres:
+  shoplistdb:
     image: 'postgres:15.6-alpine3.19'
     container_name: 'shop-list-db'
     ports:
-      - 5433:5432
+      - "5433:5432/tcp"
     volumes:
-#      - postgres_data:/var/lib/postgresql/data
       - ./schema.sql:/docker-entrypoint-initdb.d/schema.sql
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_HOST_AUTH_METHOD=trust
       - POSTGRES_DB=shoplist
+    networks:
+      - my-net
 
-  config-service:
-    image: registry.hub.docker.com/ivvi04/config-service
-    volumes:
-      - ./config-data:/var/config-data
-    environment:
-      - JAVA_OPTS=
-        -DEUREKA_SERVER=http://server-service:8761/eureka
-        -Dspring.cloud.config.server.native.searchLocations=/var/config-data
+  configservice:
+    image: config-service
+    build: config-service
+    container_name: 'config-service'
     ports:
       - 8888:8888
     depends_on:
-      - postgres
+      - shoplistdb
+    links:
+      - shoplistdb
+    networks:
+      - my-net
 
-  server-service:
-    image: developer.okta.com/microservice-docker-server-service:0.0.1-SNAPSHOT
+  serverservice:
+    image: server-service
+    build: server-service
+    container_name: 'server-service'
     ports:
       - 8761:8761
-    depends_on:
-      - postgres
-      - config-service
-
-  auth-service:
-    image: developer.okta.com/microservice-docker-auth-service:0.0.1-SNAPSHOT
     environment:
-      - JAVA_OPTS=
-        -DEUREKA_SERVER=http://server-service:8761/eureka
+      - "SPRING_PROFILES_ACTIVE=docker"
     depends_on:
-      - postgres
-      - config-service
-      - server-service
+      - shoplistdb
+      - configservice
+    links:
+      - shoplistdb
+      - configservice
+    networks:
+      - my-net
+
+  authservice:
+    image: auth-service
+    build: auth-service
+    container_name: 'auth-service'
+    environment:
+      - "SPRING_PROFILES_ACTIVE=docker"
+    depends_on:
+      - shoplistdb
+      - configservice
+      - serverservice
+    links:
+      - shoplistdb
+      - configservice
+      - serverservice
+    networks:
+      - my-net
+
+  listservice:
+    image: list-service
+    build: list-service
+    container_name: 'list-service'
+    environment:
+      - "SPRING_PROFILES_ACTIVE=docker"
+    depends_on:
+      - shoplistdb
+      - configservice
+      - serverservice
+    links:
+      - shoplistdb
+      - configservice
+      - serverservice
+    networks:
+      - my-net
+
+  productservice:
+    image: product-service
+    build: product-service
+    container_name: 'product-service'
+    environment:
+      - "SPRING_PROFILES_ACTIVE=docker"
+    depends_on:
+      - shoplistdb
+      - configservice
+      - serverservice
+    links:
+      - shoplistdb
+      - configservice
+      - serverservice
+    networks:
+      - my-net
+
+  userservice:
+    image: user-service
+    build: user-service
+    container_name: 'user-service'
+    environment:
+      - "SPRING_PROFILES_ACTIVE=docker"
+    depends_on:
+      - shoplistdb
+      - configservice
+      - serverservice
+    links:
+      - shoplistdb
+      - configservice
+      - serverservice
+    networks:
+      - my-net
+
+  gatewayservice:
+    image: gateway-service
+    build: gateway-service
+    container_name: 'gateway-service'
+    ports:
+      - 8765:8765
+    environment:
+      - "SPRING_PROFILES_ACTIVE=docker"
+    depends_on:
+      - configservice
+      - serverservice
+      - authservice
+      - listservice
+      - productservice
+      - userservice
+    links:
+      - configservice
+      - serverservice
+      - authservice
+      - listservice
+      - productservice
+      - userservice
+    networks:
+      - my-net
+
+  clientreact:
+    image: clientreact
+    build: clientreact
+    container_name: 'clientreact'
+    ports:
+      - 3000:3000
+    depends_on:
+      - gatewayservice
+    links:
+      - gatewayservice
+    networks:
+      - my-net
+
+networks:
+  my-net:
+    driver: bridge
