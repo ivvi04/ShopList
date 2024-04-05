@@ -49,7 +49,7 @@ public class PhoneAuthenticationProvider extends AbstractPhoneAuthenticationProv
         this.prepareTimingAttackProtection();
 
         try {
-            User loadedUser = this.getUserDetailService().loadUserByPhone(Integer.parseInt(userPhone));
+            User loadedUser = this.getUserDetailService().loadUserByPhone(Long.parseLong(userPhone));
             if (loadedUser == null) {
                 throw new InternalAuthenticationServiceException("UserDetailsService returned null, which is an interface contract violation");
             } else {

@@ -13,6 +13,6 @@ import java.util.List;
 public class ListDto {
     private long id;
     private String name;
-    private Integer phone;
+    private long phone;
     private List<User> users;
 }

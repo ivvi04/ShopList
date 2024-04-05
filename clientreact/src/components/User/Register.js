@@ -46,8 +46,8 @@ const Register = (props) => {
             .then(() => {
                 setShow(true);
                 setTimeout(() => {
-                    return props.history.push("/lists");
-                }, 1000);
+                    return props.history.push("/list");
+                }, 3000);
             })
             .catch((error) => {
                 setShow(true);

@@ -22,7 +22,7 @@ public class AuthenticationService {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
 
-    private JwtAuthenticationResponse generateToken(Integer phone) {
+    private JwtAuthenticationResponse generateToken(long phone) {
         User user = userService.loadUserByPhone(phone);
 
         String jwt = jwtService.generateToken(user);

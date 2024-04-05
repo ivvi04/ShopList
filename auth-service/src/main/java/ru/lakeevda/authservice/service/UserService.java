@@ -48,7 +48,7 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public boolean existByPhone(Integer phone) {
+    public boolean existByPhone(long phone) {
         return userRepository.existsByPhone(phone);
     }
 
@@ -58,7 +58,7 @@ public class UserService {
 
     }
 
-    public User loadUserByPhone(Integer phone) {
+    public User loadUserByPhone(long phone) {
         User user = userRepository.findByPhone(phone)
                 .orElseThrow(() -> new UsernameNotFoundException("Пользователь не найден"));
         return user;

@@ -18,7 +18,7 @@ public class UserDetailService implements UserDetailsService {
         return userDetails;
     }
 
-    public User loadUserByPhone(Integer phone) throws UserPhoneNotFoundException {
+    public User loadUserByPhone(long phone) throws UserPhoneNotFoundException {
         User user = userService.loadUserByPhone(phone);
         return user;
     }

@@ -11,7 +11,7 @@ public class SignInRequest {
     @Schema(description = "Телефон", example = "89121234567")
     @Size(min = 11, max = 11, message = "Длина телефона должна быть 11 символов")
     @NotBlank(message = "Номер телефона не может быть пустыми")
-    private Integer phone;
+    private long phone;
 
     @Schema(description = "Пароль", example = "my_1secret1_password")
     @Size(min = 8, max = 255, message = "Длина пароля должна быть от 8 до 255 символов")

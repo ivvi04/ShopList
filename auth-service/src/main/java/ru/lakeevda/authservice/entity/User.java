@@ -35,7 +35,7 @@ public class User implements UserDetails {
     private String password;
     @Basic
     @Column(name = "phone", nullable = false)
-    private int phone;
+    private long phone;
     @Basic
     @Column(name = "email", nullable = true, length = 100)
     private String email;

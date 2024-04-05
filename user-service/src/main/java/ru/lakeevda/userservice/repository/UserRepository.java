@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<User, Long> {
-    Optional<User> findByPhone(Integer userPhone);
+    Optional<User> findByPhone(long userPhone);
     @Query(value = "select * from public.user u where cast(u.phone as text) like :phone%", nativeQuery = true)
     List<User> findUsersByPhoneStartsWith(@Param("phone") String phone);
 }

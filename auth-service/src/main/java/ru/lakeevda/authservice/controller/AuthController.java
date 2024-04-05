@@ -21,8 +21,9 @@ public class AuthController {
 
     @Operation(summary = "Регистрация пользователя")
     @PostMapping("/sign-up")
-    public ResponseEntity<User> signUp(@RequestBody @Valid SignUpRequest request) {
-        return ResponseEntity.ok().body(authenticationService.createUser(request));
+    public ResponseEntity<Void> signUp(@RequestBody @Valid SignUpRequest request) {
+        authenticationService.createUser(request);
+        return ResponseEntity.ok().build();
     }
 
     @Operation(summary = "Авторизация пользователя")

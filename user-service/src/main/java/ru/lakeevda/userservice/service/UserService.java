@@ -20,7 +20,7 @@ public class UserService {
                 new DataNotFoundException("Пользователь не найден!"));
     }
 
-    public User getUserByPhone(Integer phone) {
+    public User getUserByPhone(long phone) {
         return userRepository.findByPhone(phone).orElseThrow(() ->
                 new DataNotFoundException("Пользователь не найден!"));
     }

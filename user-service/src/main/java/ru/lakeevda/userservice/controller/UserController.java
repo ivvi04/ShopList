@@ -14,7 +14,7 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping("/{phone}")
-    public ResponseEntity<User> getUser(@PathVariable Integer phone) {
+    public ResponseEntity<User> getUser(@PathVariable long phone) {
         User user = userService.getUserByPhone(phone);
         return ResponseEntity.ok().body(user);
     }

@@ -36,7 +36,7 @@ public class ListService {
                 new DataNotFoundException("Пользователь не найден!"));
     }
 
-    private User findUserByPhone(Integer userPhone) {
+    private User findUserByPhone(long userPhone) {
         return userRepository.findByPhone(userPhone).orElseThrow(() ->
                 new DataNotFoundException("Пользователь не найден!"));
     }
@@ -51,7 +51,7 @@ public class ListService {
         return getListDto(list);
     }
 
-    public List<ListDto> getListByUserPhone(Integer userPhone) {
+    public List<ListDto> getListByUserPhone(long userPhone) {
         User user = findUserByPhone(userPhone);
         List<Lists> lists = listRepository.findListsByAuthorIdOrUsersContains(user.getId(), user);
         List<ListDto> listDtos = new ArrayList<>();
@@ -72,7 +72,7 @@ public class ListService {
     }
 
     @Transactional
-    public void updateList(ListDto updateList, Integer phone) {
+    public void updateList(ListDto updateList, long phone) {
         Lists list = findListById(updateList.getId());
         User user = findUserByPhone(phone);
         if (list.getAuthorId() != user.getId())
@@ -83,7 +83,7 @@ public class ListService {
     }
 
     @Transactional
-    public void deleteList(Long id, Integer phone) {
+    public void deleteList(Long id, long phone) {
         Lists list = findListById(id);
         User user = findUserByPhone(phone);
         if (list.getAuthorId() != user.getId())
@@ -91,7 +91,7 @@ public class ListService {
         listRepository.delete(list);
     }
     @Transactional
-    public ListDto addUserToList(Long id, Integer phone) {
+    public ListDto addUserToList(Long id, long phone) {
         Lists list = findListById(id);
         User user = findUserByPhone(phone);
         if (list.getAuthorId() != user.getId() && !list.getUsers().contains(user)) list.addUser(user);
@@ -100,7 +100,7 @@ public class ListService {
     }
 
     @Transactional
-    public ListDto deleteUserFromList(Long id, Integer phone) {
+    public ListDto deleteUserFromList(Long id, long phone) {
         Lists list = findListById(id);
         User user = findUserByPhone(phone);
 //        if (list.getAuthorId() == user.getId())
