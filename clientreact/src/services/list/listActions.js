@@ -1,7 +1,7 @@
 import * as UT from "./listTypes";
 import * as authUser from "../../utils/authUser";
 
-const LIST_URI = "http://localhost:8765/list/";
+const LIST_URI = localStorage.addressIp + "/list/";
 
 export const findList = (listId) => {
     return async (dispatch) => {

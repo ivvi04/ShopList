@@ -1,7 +1,7 @@
 import * as UT from "./loginTypes";
 import * as authUser from "../../../utils/authUser";
 
-const AUTH_URL = "http://localhost:8765/auth/sign-in";
+const AUTH_URL = localStorage.addressIp + "/auth/sign-in";
 
 export const authenticateUser = (phone, password) => async (dispatch) => {
 

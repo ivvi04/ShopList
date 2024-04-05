@@ -1,25 +1,8 @@
 import * as UT from "./registerTypes";
-import axios from "axios";
 import * as authToken from "../../../utils/authUser";
 import {authenticateUser} from "../login/loginActions";
 
-const REGISTER_URL = "http://localhost:8765/auth/sign-up";
-
-export const fetchUsers = () => {
-    return (dispatch) => {
-        dispatch(userRequest());
-        axios
-            .get(
-                "https://randomapi.com/api/6de6abfedb24f889e0b5f675edc50deb?fmt=raw&sole"
-            )
-            .then((response) => {
-                dispatch(userSuccess(response.data));
-            })
-            .catch((error) => {
-                dispatch(userFailure(error.message));
-            });
-    };
-};
+const REGISTER_URL = localStorage.addressIp + "/auth/sign-up";
 
 export const registerUser = (userObject) => async (dispatch) => {
     dispatch(userRequest());

@@ -67,7 +67,7 @@ class List extends Component {
 
                     authUser.makeAPIRequest({
                         method: 'get',
-                        url: "http://localhost:8765/product/" + listId + "/products"
+                        url: localStorage.addressIp + "/product/" + listId + "/products"
                     })
                         .then((response) => {
                             this.setState({
@@ -199,7 +199,7 @@ class List extends Component {
     addUser = () => {
         authUser.makeAPIRequest({
             method: 'get',
-            url: "http://localhost:8765/user/" + this.state.searchUser
+            url: localStorage.addressIp + "/user/" + this.state.searchUser
         })
             .then((response) => {
                 const filterList = this.state.users.filter(item => item.phone === response.data.phone);
@@ -273,7 +273,7 @@ class List extends Component {
         };
         authUser.makeAPIRequest({
             method: 'get',
-            url: "http://localhost:8765/product/" + this.state.id + "/products"
+            url: localStorage.addressIp + "/product/" + this.state.id + "/products"
         })
             .then((response) => {
                 const filterList = response.data.filter(item => item.name === this.state.searchProduct);

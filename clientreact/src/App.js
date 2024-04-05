@@ -28,6 +28,9 @@ const App = () => {
   login.username = localStorage.getItem('userName');
   login.userphone = localStorage.getItem('userPhone');
   login.isLoggedIn = localStorage.getItem('isLoggedIn');
+
+  localStorage.setItem("addressIp", "http://" + window.location.host.split(':')[0] + ":8765");
+
   return (
     <Router>
       <NavigationBar />

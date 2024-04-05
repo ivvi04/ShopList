@@ -1,7 +1,7 @@
 import * as UT from "./userTypes";
 import * as authUser from "../../../utils/authUser";
 
-const USER_URL = "http://localhost:8765/user/";
+const USER_URL = localStorage.addressIp + "/user/";
 
 export const findUser = (userPhone) => {
     return async (dispatch) => {
@@ -51,7 +51,7 @@ export const changePassword = (phone, oldPassword, password, confirmPassword) =>
     try {
         const response = await authUser.makeAPIRequest({
             method: 'post',
-            url: "http://localhost:8765/auth/change-password",
+            url: localStorage.addressIp + "/auth/change-password",
             data: {
                 phone: phone,
                 oldPassword: oldPassword,

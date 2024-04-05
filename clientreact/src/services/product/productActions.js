@@ -1,7 +1,7 @@
 import * as UT from "./productTypes";
 import * as authUser from "../../utils/authUser";
 
-const PRODUCT_URI = "http://localhost:8765/product/";
+const PRODUCT_URI = localStorage.addressIp + "/product/";
 
 export const findAllProducts = (listId) => {
     return async (dispatch) => {

@@ -244,6 +244,7 @@ class Product extends Component {
                                             (<Image alt="preview image" src={image}
                                                     style={{
                                                         width: "300px",
+                                                        maxWidth: "100%",
                                                         borderRadius: '10%',
                                                         overflow: 'hidden',
                                                         borderWidth: 3,
@@ -256,6 +257,8 @@ class Product extends Component {
                                                         style={{
                                                             width: "300px",
                                                             height: "300px",
+                                                            maxWidth: "100%",
+                                                            maxHeight: "100%",
                                                             background: "grey",
                                                             borderRadius: '10%'
                                                         }}

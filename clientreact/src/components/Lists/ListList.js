@@ -37,7 +37,7 @@ class ListList extends Component {
     findAllLists() {
         authUser.makeAPIRequest({
             method: 'get',
-            url: "http://localhost:8765/list/phone/" + localStorage.userPhone
+            url: localStorage.addressIp + "/list/phone/" + localStorage.userPhone
         })
             .then((response) => {
                 this.setState({lists: response.data});
