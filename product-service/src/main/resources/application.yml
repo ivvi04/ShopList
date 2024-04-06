@@ -4,6 +4,8 @@ spring:
     name: product-service
   config:
     import: "optional:configserver:http://localhost:8888"
+    activate:
+      on-profile: default
 ---
 #id приложения = желательно указывать всегда в микросервисных приложениях
 spring:

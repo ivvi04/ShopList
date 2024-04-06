@@ -1,11 +1,9 @@
-
 server:
   port: 8761
 
 eureka:
   instance:
     hostname: localhost
-#    hostname: server-service
     preferIpAddress: true
     leaseRenewalIntervalInSeconds: 30
     leaseExpirationDurationInSeconds: 30

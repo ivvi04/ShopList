@@ -5,6 +5,8 @@ spring:
     name: gateway-service
   config:
     import: "optional:configserver:http://localhost:8888"
+    activate:
+      on-profile: default
 logging:
   level:
     com.netflix.discovery.shared.resolver.aws.ConfigClusterResolver: WARN
