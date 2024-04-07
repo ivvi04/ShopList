@@ -2,7 +2,6 @@ FROM maven:latest as builder
 RUN mkdir /server-service
 WORKDIR /server-service
 COPY . .
-#RUN mvn clean install
 RUN mvn clean package -DskipTests -q
 
 FROM openjdk:17-oracle

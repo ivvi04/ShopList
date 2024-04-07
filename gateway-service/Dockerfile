@@ -2,7 +2,6 @@ FROM maven:latest as builder
 RUN mkdir /gateway-service
 WORKDIR /gateway-service
 COPY . .
-#RUN mvn clean install
 RUN mvn clean package -DskipTests -q
 
 FROM openjdk:17-oracle
