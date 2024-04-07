@@ -1,9 +1,7 @@
 import React from "react";
-// import { useSelector } from "react-redux";
 import {Alert} from "react-bootstrap";
 
 const Home = (props) => {
-    // const login = useSelector((state) => state.login);
     if (localStorage.isLoggedIn) return props.history.push("/list");
     else {
         return (
