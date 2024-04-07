@@ -15,6 +15,11 @@ services:
       - POSTGRES_DB=shoplist
     networks:
       - my-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
 
   configservice:
     image: config-service
@@ -23,11 +28,17 @@ services:
     ports:
       - 8888:8888
     depends_on:
-      - shoplistdb
+      shoplistdb:
+        condition: service_healthy
     links:
       - shoplistdb
     networks:
       - my-net
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8888/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
 
   serverservice:
     image: server-service
@@ -38,13 +49,20 @@ services:
     environment:
       - "SPRING_PROFILES_ACTIVE=docker"
     depends_on:
-      - shoplistdb
-      - configservice
+      shoplistdb:
+        condition: service_healthy
+      configservice:
+        condition: service_healthy
     links:
       - shoplistdb
       - configservice
     networks:
       - my-net
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8761/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
 
   authservice:
     image: auth-service
@@ -53,9 +71,12 @@ services:
     environment:
       - "SPRING_PROFILES_ACTIVE=docker"
     depends_on:
-      - shoplistdb
-      - configservice
-      - serverservice
+      shoplistdb:
+        condition: service_healthy
+      configservice:
+        condition: service_healthy
+      serverservice:
+        condition: service_healthy
     links:
       - shoplistdb
       - configservice
@@ -70,15 +91,23 @@ services:
     environment:
       - "SPRING_PROFILES_ACTIVE=docker"
     depends_on:
-      - shoplistdb
-      - configservice
-      - serverservice
+      shoplistdb:
+        condition: service_healthy
+      configservice:
+        condition: service_healthy
+      serverservice:
+        condition: service_healthy
     links:
       - shoplistdb
       - configservice
       - serverservice
     networks:
       - my-net
+#    healthcheck:
+#      test: ["CMD", "curl", "-f", "http://localhost"]
+#      interval: 10s
+#      timeout: 5s
+#      retries: 3
 
   productservice:
     image: product-service
@@ -87,15 +116,22 @@ services:
     environment:
       - "SPRING_PROFILES_ACTIVE=docker"
     depends_on:
-      - shoplistdb
-      - configservice
-      - serverservice
+      shoplistdb:
+        condition: service_healthy
+      configservice:
+        condition: service_healthy
+      serverservice:
+        condition: service_healthy
     links:
       - shoplistdb
       - configservice
       - serverservice
     networks:
       - my-net
+#    healthcheck:
+#      interval: 10s
+#      timeout: 5s
+#      retries: 3
 
   userservice:
     image: user-service
@@ -104,15 +140,22 @@ services:
     environment:
       - "SPRING_PROFILES_ACTIVE=docker"
     depends_on:
-      - shoplistdb
-      - configservice
-      - serverservice
+      shoplistdb:
+        condition: service_healthy
+      configservice:
+        condition: service_healthy
+      serverservice:
+        condition: service_healthy
     links:
       - shoplistdb
       - configservice
       - serverservice
     networks:
       - my-net
+#    healthcheck:
+#      interval: 10s
+#      timeout: 5s
+#      retries: 3
 
   gatewayservice:
     image: gateway-service
@@ -123,12 +166,18 @@ services:
     environment:
       - "SPRING_PROFILES_ACTIVE=docker"
     depends_on:
-      - configservice
-      - serverservice
-      - authservice
-      - listservice
-      - productservice
-      - userservice
+      configservice:
+        condition: service_healthy
+      serverservice:
+        condition: service_healthy
+      authservice:
+        condition: service_started
+      listservice:
+        condition: service_started
+      productservice:
+        condition: service_started
+      userservice:
+        condition: service_started
     links:
       - configservice
       - serverservice
@@ -138,6 +187,11 @@ services:
       - userservice
     networks:
       - my-net
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8765/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
 
   clientreact:
     image: clientreact
@@ -146,11 +200,16 @@ services:
     ports:
       - 3000:3000
     depends_on:
-      - gatewayservice
+      gatewayservice:
+        condition: service_healthy
     links:
       - gatewayservice
     networks:
       - my-net
+    healthcheck:
+      interval: 10s
+      timeout: 5s
+      retries: 3
 
 networks:
   my-net:
