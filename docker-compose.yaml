@@ -103,11 +103,6 @@ services:
       - serverservice
     networks:
       - my-net
-#    healthcheck:
-#      test: ["CMD", "curl", "-f", "http://localhost"]
-#      interval: 10s
-#      timeout: 5s
-#      retries: 3
 
   productservice:
     image: product-service
@@ -128,10 +123,6 @@ services:
       - serverservice
     networks:
       - my-net
-#    healthcheck:
-#      interval: 10s
-#      timeout: 5s
-#      retries: 3
 
   userservice:
     image: user-service
@@ -152,10 +143,6 @@ services:
       - serverservice
     networks:
       - my-net
-#    healthcheck:
-#      interval: 10s
-#      timeout: 5s
-#      retries: 3
 
   gatewayservice:
     image: gateway-service
@@ -192,7 +179,6 @@ services:
       interval: 10s
       timeout: 5s
       retries: 3
-      start_period: 30s
 
   clientreact:
     image: clientreact
