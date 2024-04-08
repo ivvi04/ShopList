@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.lakeevda.userservice.entity.User;
 import ru.lakeevda.userservice.exception.DataNotFoundException;
-import ru.lakeevda.userservice.exception.OtherUserExistException;
+import ru.lakeevda.userservice.exception.UserExistException;
 import ru.lakeevda.userservice.repository.UserRepository;
 
 import java.util.List;
@@ -33,7 +33,7 @@ public class UserService {
     public User updateUser(User updateUser) {
         User user = getUserByPhone(updateUser.getPhone());
         if (user.getId() != updateUser.getId())
-            throw new OtherUserExistException("Пользователь с таким телефоном уже существует!");
+            throw new UserExistException("Пользователь с таким телефоном уже существует!");
         else updateUser.setId(user.getId());
         return userRepository.save(updateUser);
     }

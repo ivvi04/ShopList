@@ -1,14 +1,11 @@
 package ru.lakeevda.userservice.controller;
 
-import jakarta.ws.rs.NotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ru.lakeevda.userservice.exception.DataNotFoundException;
-import ru.lakeevda.userservice.exception.OtherUserExistException;
 import ru.lakeevda.userservice.exception.UserExistException;
-
 
 @RestControllerAdvice
 public class AdviceController {
@@ -24,9 +21,9 @@ public class AdviceController {
         return e.getMessage();
     }
 
-    @ExceptionHandler(OtherUserExistException.class)
+    @ExceptionHandler(RuntimeException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public String otherUserExist(OtherUserExistException e){
-        return e.getMessage();
+    public String otherException(RuntimeException e){
+        return "Неизвестная ошибка: " + e.getMessage();
     }
 }

@@ -9,13 +9,6 @@ import ru.lakeevda.productservice.exception.DataNotFoundException;
 
 @RestControllerAdvice
 public class AdviceController {
-
-//    @ExceptionHandler(UserNotAuthorException.class)
-//    @ResponseStatus(HttpStatus.BAD_REQUEST)
-//    public String userNotAuthor(UserNotAuthorException e){
-//        return e.getMessage();
-//    }
-
     @ExceptionHandler(DataNotFoundException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public String dataNotFound(DataNotFoundException e){

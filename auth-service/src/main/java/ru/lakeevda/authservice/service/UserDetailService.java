@@ -22,5 +22,4 @@ public class UserDetailService implements UserDetailsService {
         User user = userService.loadUserByPhone(phone);
         return user;
     }
-
 }

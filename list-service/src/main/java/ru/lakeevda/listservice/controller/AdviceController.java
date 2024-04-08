@@ -11,7 +11,6 @@ import ru.lakeevda.listservice.exception.UserNotAuthorException;
 
 @RestControllerAdvice
 public class AdviceController {
-
     @ExceptionHandler(UserNotAuthorException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public String userNotAuthor(UserNotAuthorException e){

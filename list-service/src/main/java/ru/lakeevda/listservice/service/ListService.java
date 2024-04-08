@@ -103,8 +103,6 @@ public class ListService {
     public ListDto deleteUserFromList(Long id, long phone) {
         Lists list = findListById(id);
         User user = findUserByPhone(phone);
-//        if (list.getAuthorId() == user.getId())
-//            throw new UserNotAuthorException("Автора нельзя удалить!");
         list.deleteUser(user);
         listRepository.save(list);
         return getListDto(list);

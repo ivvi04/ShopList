@@ -44,9 +44,4 @@ public class AuthController {
         if (authenticationService.validateToken(token)) return "Токен валидный";
         else return "Токен не валидный";
     }
-//    @GetMapping("/validate")
-//    public String validateToken(@RequestBody @Valid ValidTokenRequest request) {
-//        if (authenticationService.validateToken(request)) return "Token is valid";
-//        else return "Token is not valid";
-//    }
 }
