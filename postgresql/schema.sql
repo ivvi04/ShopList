@@ -1,11 +1,5 @@
 ------------------- Enumerators -------------------
 
-CREATE TYPE public.role_enum AS ENUM
-    ('ADMIN', 'USER');
-
-ALTER TYPE public.role_enum
-    OWNER TO postgres;
-
 CREATE TYPE public.status_enum AS ENUM
     ('CREATED', 'UPDATED', 'DELETED');
 
@@ -13,24 +7,6 @@ ALTER TYPE public.status_enum
     OWNER TO postgres;
 
 --------------------- Tables ---------------------
-
-CREATE TABLE IF NOT EXISTS public."user"
-(
-    id          bigserial                                       NOT NULL,
-    username    character(100)  COLLATE pg_catalog."default"    NOT NULL,
-    password    text            COLLATE pg_catalog."default"    NOT NULL,
-    phone       bigint                                          NOT NULL,
-    email       character(100)  COLLATE pg_catalog."default",
-    role        role_enum                                       NOT NULL,
-    image       text            COLLATE pg_catalog."default",
-    CONSTRAINT user_pkey        PRIMARY KEY (id),
-    CONSTRAINT phone_u          UNIQUE (phone)
-    )
-
-    TABLESPACE pg_default;
-
-ALTER TABLE IF EXISTS public."user"
-    OWNER to postgres;
 
 CREATE TABLE IF NOT EXISTS public.lists
 (
