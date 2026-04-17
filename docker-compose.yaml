@@ -2,7 +2,7 @@ version: '3.9'
 
 services:
   shoplistdb:
-    image: 'postgres:15.6-alpine3.19'
+    image: 'postgres:18.1'
     container_name: 'shop-list-db'
     ports:
       - "5433:5432/tcp"
