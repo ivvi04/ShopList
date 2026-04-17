@@ -16,9 +16,9 @@ import ru.lakeevda.productservice.repository.ProductRepository;
 import java.math.BigInteger;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -34,6 +34,7 @@ class ProductControllerTest {
     private Product product3;
     @Autowired
     private ObjectMapper objectMapper;
+
     @BeforeEach
     public void setup() {
         MockitoAnnotations.openMocks(this);
