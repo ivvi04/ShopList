@@ -8,7 +8,8 @@ import ru.lakeevda.listproductservice.service.ListService;
 
 import java.util.List;
 
-@RestController("/list")
+@RestController
+@RequestMapping("/list")
 @RequiredArgsConstructor
 public class ListController {
     private final ListService listService;

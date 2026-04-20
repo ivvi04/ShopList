@@ -12,7 +12,7 @@ eureka:
     preferIpAddress: true
 
 springdoc:
-  packagesToScan: ru.lakeevda.listservice
+  packagesToScan: ru.lakeevda.listproductservice
 
 spring:
   datasource:

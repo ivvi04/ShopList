@@ -8,7 +8,8 @@ import ru.lakeevda.listproductservice.service.ProductService;
 
 import java.util.List;
 
-@RestController("/product")
+@RestController
+@RequestMapping("/product")
 @RequiredArgsConstructor
 public class ProductController {
     private final ProductService productService;
