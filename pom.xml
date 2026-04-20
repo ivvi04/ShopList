@@ -29,8 +29,7 @@
         <module>config-service</module>
         <module>server-service</module>
         <module>auth-service</module>
-        <module>list-service</module>
-        <module>product-service</module>
+        <module>list-product-service</module>
         <module>gateway-service</module>
     </modules>
 

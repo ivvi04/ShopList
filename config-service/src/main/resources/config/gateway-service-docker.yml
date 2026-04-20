@@ -31,27 +31,13 @@ spring:
           filters:
             - AuthenticationFilter
             - RewritePath=/web-client/(?<path>.*), /$\{path}
-        - id: user-service
-          uri: lb://user-service
+        - id: list-product-service
+          uri: lb://list-product-service
           predicates:
-            - Path=/user/**
+            - Path=/list-product/**
           filters:
             - AuthenticationFilter
-            - RewritePath=/user/(?<path>.*), /$\{path}
-        - id: list-service
-          uri: lb://list-service
-          predicates:
-            - Path=/list/**
-          filters:
-            - AuthenticationFilter
-            - RewritePath=/list/(?<path>.*), /$\{path}
-        - id: product-service
-          uri: lb://product-service
-          predicates:
-            - Path=/product/**
-          filters:
-            - AuthenticationFilter
-            - RewritePath=/product/(?<path>.*), /$\{path}
+            - RewritePath=/list-product/(?<path>.*), /$\{path}
         - id: openapi
           uri: http://localhost:${server.port}
           predicates:
@@ -65,6 +51,4 @@ springdoc:
       - name: user
         url: /v3/api-docs/user
       - name: list
-        url: /v3/api-docs/list
-      - name: product
-        url: /v3/api-docs/product
+        url: /v3/api-docs/list-product

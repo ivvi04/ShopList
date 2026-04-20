@@ -85,9 +85,9 @@ services:
       - my-net
 
   listservice:
-    image: list-service
-    build: list-service
-    container_name: 'list-service'
+    image: list-product-service
+    build: list-product-service
+    container_name: 'list-product-service'
     environment:
       - "SPRING_PROFILES_ACTIVE=docker"
     depends_on:
