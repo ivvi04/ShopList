@@ -1,10 +1,10 @@
-package ru.lakeevda.userservice.controller;
+package ru.lakeevda.authservice.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.lakeevda.userservice.entity.User;
-import ru.lakeevda.userservice.service.UserService;
+import ru.lakeevda.authservice.entity.User;
+import ru.lakeevda.authservice.service.UserService;
 
 import java.util.List;
 
@@ -27,7 +27,7 @@ public class UserController {
 
     @PutMapping("/update")
     public ResponseEntity<User> updateUser(@RequestBody User user) {
-        User updateUser = userService.updateUser(user);
+        User updateUser = userService.update(user);
         return ResponseEntity.ok().body(updateUser);
     }
 }

@@ -124,26 +124,6 @@ services:
     networks:
       - my-net
 
-  userservice:
-    image: user-service
-    build: user-service
-    container_name: 'user-service'
-    environment:
-      - "SPRING_PROFILES_ACTIVE=docker"
-    depends_on:
-      shoplistdb:
-        condition: service_healthy
-      configservice:
-        condition: service_healthy
-      serverservice:
-        condition: service_healthy
-    links:
-      - shoplistdb
-      - configservice
-      - serverservice
-    networks:
-      - my-net
-
   gatewayservice:
     image: gateway-service
     build: gateway-service
@@ -163,15 +143,12 @@ services:
         condition: service_started
       productservice:
         condition: service_started
-      userservice:
-        condition: service_started
     links:
       - configservice
       - serverservice
       - authservice
       - listservice
       - productservice
-      - userservice
     networks:
       - my-net
     healthcheck:

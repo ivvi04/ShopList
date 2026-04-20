@@ -1,4 +1,4 @@
-package ru.lakeevda.userservice.exception;
+package ru.lakeevda.authservice.exception;
 
 public class DataNotFoundException extends RuntimeException {
 

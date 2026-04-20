@@ -14,14 +14,13 @@ import ru.lakeevda.authservice.entity.enums.UserRole;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 
 @Entity
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "user", schema = "public", catalog = "shoplist")
+@Table(name = "user", schema = "auth_service", catalog = "shoplist")
 public class User implements UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id

@@ -2,7 +2,6 @@ package ru.lakeevda.authservice.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,7 +11,6 @@ import ru.lakeevda.authservice.entity.User;
 import ru.lakeevda.authservice.entity.enums.UserRole;
 import ru.lakeevda.authservice.exception.ConfirmPasswordIncorrectException;
 import ru.lakeevda.authservice.exception.OldPasswordIncorrectException;
-import ru.lakeevda.authservice.repository.UserRepository;
 
 @Service
 @RequiredArgsConstructor
@@ -40,7 +38,7 @@ public class AuthenticationService {
                 .role(UserRole.USER)
                 .build();
 
-        return userService.saveUser(user);
+        return userService.create(user);
     }
 
     public JwtAuthenticationResponse signIn(SignInRequest request) {
@@ -67,7 +65,7 @@ public class AuthenticationService {
         if (!request.getPassword().equals(request.getConfirmPassword()))
             throw new ConfirmPasswordIncorrectException("Новый пароль не совпадает с подтвержденным!");
         user.setPassword(passwordEncoder.encode(request.getPassword()));
-        userService.saveUser(user, false);
+        userService.create(user, false);
         authenticationManager.authenticate(new UserPhonePasswordAuthenticationToken(
                 request.getPhone(),
                 request.getPassword()
