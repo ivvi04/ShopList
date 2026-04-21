@@ -18,12 +18,19 @@ spring:
         locator:
           enabled: true
       routes:
-        - id: auth-service
+        - id: auth
           uri: lb://auth-service
           predicates:
             - Path=/auth/**
           filters:
             - RewritePath=/auth/(?<path>.*), /$\{path}
+        - id: user
+          uri: lb://auth-service
+          predicates:
+            - Path=/user/**
+          filters:
+            - AuthenticationFilter
+            - RewritePath=/user/(?<path>.*), /$\{path}
         - id: web-client
           uri: lb://web-client
           predicates:
@@ -31,7 +38,7 @@ spring:
           filters:
             - AuthenticationFilter
             - RewritePath=/web-client/(?<path>.*), /$\{path}
-        - id: list-product-service
+        - id: list-product
           uri: lb://list-product-service
           predicates:
             - Path=/list-product/**

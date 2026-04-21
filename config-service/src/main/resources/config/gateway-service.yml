@@ -18,12 +18,27 @@ spring:
         locator:
           enabled: true
       routes:
-        - id: auth-service
+        - id: auth-id
           uri: lb://auth-service
           predicates:
             - Path=/auth/**
           filters:
+#            - AuthenticationFilter
             - RewritePath=/auth/(?<path>.*), /$\{path}
+        - id: user-id
+          uri: lb://auth-service
+          predicates:
+            - Path=/user/**
+          filters:
+            - AuthenticationFilter
+            - RewritePath=/user/(?<path>.*), /$\{path}
+        - id: list-product-id
+          uri: lb://list-product-service
+          predicates:
+            - Path=/list-product/**
+          filters:
+            - AuthenticationFilter
+            - RewritePath=/list-product/(?<path>.*), /$\{path}
         - id: web-client
           uri: lb://web-client
           predicates:
@@ -31,13 +46,6 @@ spring:
           filters:
             - AuthenticationFilter
             - RewritePath=/web-client/(?<path>.*), /$\{path}
-        - id: list-product-service
-          uri: lb://list-product-service
-          predicates:
-            - Path=/list-product/**
-          filters:
-            - AuthenticationFilter
-            - RewritePath=/list-product/(?<path>.*), /$\{path}
         - id: openapi
           uri: http://localhost:${server.port}
           predicates:
@@ -48,9 +56,9 @@ spring:
 springdoc:
   swagger-ui:
     urls:
+      - name: auth
+        url: /v3/api-docs/auth
       - name: user
         url: /v3/api-docs/user
-      - name: list
-        url: /v3/api-docs/list
-      - name: product
-        url: /v3/api-docs/product
+      - name: list-product
+        url: /v3/api-docs/list-product

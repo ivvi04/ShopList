@@ -9,6 +9,7 @@ import ru.lakeevda.authservice.service.UserService;
 import java.util.List;
 
 @RestController
+@RequestMapping("/user")
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;

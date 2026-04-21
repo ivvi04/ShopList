@@ -10,7 +10,6 @@ import ru.lakeevda.authservice.dto.ChangePasswordRequest;
 import ru.lakeevda.authservice.dto.JwtAuthenticationResponse;
 import ru.lakeevda.authservice.dto.SignInRequest;
 import ru.lakeevda.authservice.dto.SignUpRequest;
-import ru.lakeevda.authservice.entity.User;
 import ru.lakeevda.authservice.service.AuthenticationService;
 
 @RestController

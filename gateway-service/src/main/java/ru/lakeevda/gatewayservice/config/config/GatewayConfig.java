@@ -20,9 +20,11 @@ public class GatewayConfig {
         List<GroupedOpenApi> groups = new ArrayList<>();
         List<RouteDefinition> definitions = locator.getRouteDefinitions().collectList().block();
         assert definitions != null;
-        definitions.stream().filter(routeDefinition -> routeDefinition.getId().matches(".*-service")).forEach(routeDefinition -> {
-            String name = routeDefinition.getId().replaceAll("-service", "");
-            groups.add(GroupedOpenApi.builder().pathsToMatch("/" + name + "/**").group(name).build());
+        definitions.stream().filter(routeDefinition -> routeDefinition.getId().matches(".*-id")).forEach(routeDefinition -> {
+            String name = routeDefinition.getId().replaceAll("-id", "");
+            groups.add(GroupedOpenApi.builder()
+                    .pathsToMatch("/" + name + "/**")
+                    .group(name).build());
         });
         return groups;
     }
