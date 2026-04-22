@@ -11,8 +11,8 @@ import java.math.BigInteger;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "product", schema = "list_product_service", catalog = "shoplist")
-public class Product {
+@Table(name = "products", schema = "list_product_service", catalog = "shoplist")
+public class ProductEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     @Column(name = "id", nullable = false)
@@ -27,8 +27,8 @@ public class Product {
     @Column(name = "url", nullable = true, length = -1)
     private String url;
     @Basic
-    @Column(name = "list_id", nullable = false)
-    private long listId;
+    @Column(name = "shop_list_id", nullable = false)
+    private long shopListId;
     @Basic
     @Column(name = "image", nullable = true, length = -1)
     private String image;

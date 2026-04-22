@@ -10,9 +10,9 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ListDto {
-    private long id;
+public class ShopListDto {
+    private Long id;
     private String name;
-    private long phone;
-    private List<User> users;
+    private Long phone;
+    private List<Long> userIds;
 }

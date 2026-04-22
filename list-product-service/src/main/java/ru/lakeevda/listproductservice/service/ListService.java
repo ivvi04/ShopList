@@ -3,10 +3,10 @@ package ru.lakeevda.listproductservice.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.lakeevda.listproductservice.dto.ListDto;
-import ru.lakeevda.listproductservice.entity.Lists;
+import ru.lakeevda.listproductservice.dto.ShopListDto;
+import ru.lakeevda.listproductservice.entity.ShopListEntity;
 import ru.lakeevda.listproductservice.entity.User;
-import ru.lakeevda.listproductservice.enums.ListStatus;
+import ru.lakeevda.listproductservice.enums.ShopListStatus;
 import ru.lakeevda.listproductservice.exception.DataNotFoundException;
 import ru.lakeevda.listproductservice.exception.UserNotAuthorException;
 import ru.lakeevda.listproductservice.repository.ListRepository;
@@ -19,92 +19,91 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ListService {
     private final ListRepository listRepository;
-    private final UserRepository userRepository;
 
-    private Lists findListById(Long id) {
+    private ShopListEntity findListById(Long id) {
         return listRepository.findById(id).orElseThrow(() ->
                 new DataNotFoundException("Список не найден!"));
     }
 
-    private User findUserById(Long id) {
-        return userRepository.findById(id).orElseThrow(() ->
-                new DataNotFoundException("Пользователь не найден!"));
+//    private User findUserById(Long id) {
+//        return userRepository.findById(id).orElseThrow(() ->
+//                new DataNotFoundException("Пользователь не найден!"));
+//    }
+//
+//    private User findUserByUsername(String username) {
+//        return userRepository.findByUsername(username).orElseThrow(() ->
+//                new DataNotFoundException("Пользователь не найден!"));
+//    }
+//
+//    private User findUserByPhone(long userPhone) {
+//        return userRepository.findByPhone(userPhone).orElseThrow(() ->
+//                new DataNotFoundException("Пользователь не найден!"));
+//    }
+
+    private ShopListDto getListDto(ShopListEntity shopList) {
+        return new ShopListDto(shopList.getId(), shopList.getName(), findUserById(shopList.getAuthorId()).getPhone(), shopList.getUsers());
     }
 
-    private User findUserByUsername(String username) {
-        return userRepository.findByUsername(username).orElseThrow(() ->
-                new DataNotFoundException("Пользователь не найден!"));
-    }
 
-    private User findUserByPhone(long userPhone) {
-        return userRepository.findByPhone(userPhone).orElseThrow(() ->
-                new DataNotFoundException("Пользователь не найден!"));
-    }
-
-    private ListDto getListDto(Lists list) {
-        return new ListDto(list.getId(), list.getName(), findUserById(list.getAuthorId()).getPhone(), list.getUsers());
-    }
-
-
-    public ListDto getListById(Long id) {
-        Lists list = findListById(id);
+    public ShopListDto getListById(Long id) {
+        ShopListEntity list = findListById(id);
         return getListDto(list);
     }
 
-    public List<ListDto> getListByUserPhone(long userPhone) {
+    public List<ShopListDto> getListByUserPhone(long userPhone) {
         User user = findUserByPhone(userPhone);
-        List<Lists> lists = listRepository.findListsByAuthorIdOrUsersContains(user.getId(), user);
-        List<ListDto> listDtos = new ArrayList<>();
-        lists.forEach(list -> listDtos.add(getListDto(list)));
-        return listDtos;
+        List<ShopListEntity> lists = listRepository.findListsByAuthorIdOrUsersContains(user.getId(), user);
+        List<ShopListDto> shopListDtos = new ArrayList<>();
+        lists.forEach(list -> shopListDtos.add(getListDto(list)));
+        return shopListDtos;
     }
 
     @Transactional
-    public ListDto addList(ListDto newList) {
-        User author = findUserByPhone(newList.getPhone());
-        Lists list = new Lists();
-        list.setName(newList.getName());
-        list.setAuthorId(author.getId());
-        list.setUsers(newList.getUsers());
-        list.setStatus(ListStatus.CREATED);
-        listRepository.save(list);
-        return getListDto(list);
+    public ShopListDto addList(ShopListDto newShopList) {
+        User author = findUserByPhone(newShopList.getPhone());
+        ShopListEntity shopList = new ShopListEntity();
+        shopList.setName(newShopList.getName());
+        shopList.setAuthorId(author.getId());
+        shopList.setUsers(newShopList.getUsers());
+        shopList.setStatus(ShopListStatus.CREATED.toString());
+        listRepository.save(shopList);
+        return getListDto(shopList);
     }
 
     @Transactional
-    public void updateList(ListDto updateList, long phone) {
-        Lists list = findListById(updateList.getId());
+    public void updateList(ShopListDto updateShopList, long phone) {
+        ShopListEntity existShopList = findListById(updateShopList.getId());
         User user = findUserByPhone(phone);
-        if (list.getAuthorId() != user.getId())
+        if (existShopList.getAuthorId() != user.getId())
             throw new UserNotAuthorException("Только у автора есть права на изменение списка!");
-        list.setName(updateList.getName());
-        list.setUsers(updateList.getUsers());
-        listRepository.save(list);
+        existShopList.setName(updateShopList.getName());
+        existShopList.setUsers(updateShopList.getUsers());
+        listRepository.save(existShopList);
     }
 
     @Transactional
     public void deleteList(Long id, long phone) {
-        Lists list = findListById(id);
+        ShopListEntity list = findListById(id);
         User user = findUserByPhone(phone);
         if (list.getAuthorId() != user.getId())
             throw new UserNotAuthorException("Только у автора есть права на удаление!");
         listRepository.delete(list);
     }
     @Transactional
-    public ListDto addUserToList(Long id, long phone) {
-        Lists list = findListById(id);
+    public ShopListDto addUserToList(Long id, long phone) {
+        ShopListEntity shopList = findListById(id);
         User user = findUserByPhone(phone);
-        if (list.getAuthorId() != user.getId() && !list.getUsers().contains(user)) list.addUser(user);
-        listRepository.save(list);
-        return getListDto(list);
+        if (shopList.getAuthorId() != user.getId() && !shopList.getUsers().contains(user)) shopList.addUser(user);
+        listRepository.save(shopList);
+        return getListDto(shopList);
     }
 
     @Transactional
-    public ListDto deleteUserFromList(Long id, long phone) {
-        Lists list = findListById(id);
+    public ShopListDto deleteUserFromList(Long id, long phone) {
+        ShopListEntity shopList = findListById(id);
         User user = findUserByPhone(phone);
-        list.deleteUser(user);
-        listRepository.save(list);
-        return getListDto(list);
+        shopList.deleteUser(user);
+        listRepository.save(shopList);
+        return getListDto(shopList);
     }
 }

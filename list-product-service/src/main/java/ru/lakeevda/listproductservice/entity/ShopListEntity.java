@@ -6,7 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.JdbcType;
 import org.hibernate.dialect.PostgreSQLEnumJdbcType;
-import ru.lakeevda.listproductservice.enums.ListStatus;
+import ru.lakeevda.listproductservice.enums.ShopListStatus;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,8 +15,8 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "lists", schema = "list_product_service", catalog = "shoplist")
-public class Lists {
+@Table(name = "shop_lists", schema = "list_product_service", catalog = "shoplist")
+public class ShopListEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     @Column(name = "id", nullable = false)
@@ -24,25 +24,20 @@ public class Lists {
     @Basic
     @Column(name = "name", nullable = false, length = -1)
     private String name;
-    @Basic
-    @Column(name = "author_id", nullable = false)
-    private long authorId;
 
-    @Column(name = "status", nullable = false, columnDefinition = "status_enum")
-    @Enumerated(EnumType.STRING)
-    @JdbcType(PostgreSQLEnumJdbcType.class)
-    private ListStatus status;
+    @Column(name = "status", nullable = false)
+    private String status;
 
     @ManyToMany
-    @JoinTable(name = "user_list",
-            joinColumns = @JoinColumn(name = "list_id", referencedColumnName = "id"),
+    @JoinTable(name = "shop_list_users",
+            joinColumns = @JoinColumn(name = "shop_list_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"))
     private List<User> users = new ArrayList<>();
 
     @OneToMany
     @JoinTable(name = "product",
-            joinColumns = @JoinColumn(name = "list_id", referencedColumnName = "id"))
-    private List<Product> products = new ArrayList<>();
+            joinColumns = @JoinColumn(name = "shop_list_id", referencedColumnName = "id"))
+    private List<ProductEntity> products = new ArrayList<>();
 
     public void addUser(User user) {
         users.add(user);
@@ -51,11 +46,11 @@ public class Lists {
     public void deleteUser(User user) {
         users.remove(user);
     }
-    public void addProduct (Product product) {
+    public void addProduct (ProductEntity product) {
         products.add(product);
     }
 
-    public void deleteProduct (Product product) {
+    public void deleteProduct (ProductEntity product) {
         products.remove(product);
     }
 }
