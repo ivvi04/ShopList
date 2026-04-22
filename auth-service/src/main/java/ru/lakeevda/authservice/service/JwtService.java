@@ -1,15 +1,15 @@
 package ru.lakeevda.authservice.service;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
-import ru.lakeevda.authservice.entity.User;
+import ru.lakeevda.authservice.entity.UserEntity;
 
 import java.security.Key;
 import java.util.Date;
@@ -25,29 +25,28 @@ public class JwtService {
     public String extractUserName(String token) {
         return extractClaim(token, Claims::getSubject);
     }
+
     public String extractPhone(String token) {
         return extractClaim(token, Claims::getSubject);
     }
 
-    public String generateToken(UserDetails userDetails) {
+    public String generateToken(UserEntity user) {
         Map<String, Object> claims = new HashMap<>();
-        if (userDetails instanceof User customUserDetails) {
-            claims.put("id", customUserDetails.getId());
-            claims.put("phone", customUserDetails.getPhone());
-            claims.put("email", customUserDetails.getEmail());
-            claims.put("role", customUserDetails.getRole());
-        }
-        return generateToken(claims, userDetails);
+        claims.put("id", user.getId());
+        claims.put("phone", user.getPhone());
+        claims.put("email", user.getEmail());
+        claims.put("role", user.getRole());
+        return generateToken(claims, user);
     }
 
-    public boolean isTokenValid(String token, UserDetails userDetails) {
-        String userName = extractUserName(token);
-        return (userName.equals(userDetails.getUsername())) && !isTokenExpired(token);
+    public boolean isTokenValid(String token, UserEntity user) {
+        Long phone = Long.parseLong(extractPhone(token));
+        return phone.equals(user.getPhone()) && !isTokenExpired(token);
     }
 
     public boolean isTokenValid(String token) {
         try {
-            Jwts.parser().setSigningKey(getSigningKey()).build().parseClaimsJws(token);
+            getClaimsJws(token);
             String username = extractUserName(token);
             return username != null && !isTokenExpired(token);
         } catch (SignatureException e) {
@@ -56,14 +55,14 @@ public class JwtService {
     }
 
     private <T> T extractClaim(String token, Function<Claims, T> claimsResolvers) {
-        Claims claims = extractAllClaims(token);
+        Claims claims = getClaimsJws(token).getPayload();
         return claimsResolvers.apply(claims);
     }
 
-    private String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
-        return Jwts.builder().setClaims(extraClaims).setSubject(userDetails.getUsername())
-                .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 100000 * 60 * 24))
+    private String generateToken(Map<String, Object> extraClaims, UserEntity user) {
+        return Jwts.builder().claims(extraClaims).subject(String.valueOf(user.getPhone()))
+                .issuedAt(new Date(System.currentTimeMillis()))
+                .expiration(new Date(System.currentTimeMillis() + 100000 * 60 * 24))
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256).compact();
     }
 
@@ -75,9 +74,9 @@ public class JwtService {
         return extractClaim(token, Claims::getExpiration);
     }
 
-    private Claims extractAllClaims(String token) {
-        return Jwts.parser().setSigningKey(getSigningKey()).build().parseClaimsJws(token)
-                .getBody();
+
+    private Jws<Claims> getClaimsJws(String token) {
+        return Jwts.parser().setSigningKey(getSigningKey()).build().parseClaimsJws(token);
     }
 
     private Key getSigningKey() {

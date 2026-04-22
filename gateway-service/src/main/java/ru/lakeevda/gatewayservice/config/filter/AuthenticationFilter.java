@@ -11,6 +11,9 @@ import ru.lakeevda.gatewayservice.exception.UnAuthAccessToAppException;
 
 @Component
 public class AuthenticationFilter extends AbstractGatewayFilterFactory<AuthenticationFilter.Config> {
+    private static final String BEARER_ = "Bearer ";
+    private static final int BEARER_LENGTH = 7;
+
     @Autowired
     private RouteValidator validator;
     @Autowired
@@ -29,8 +32,8 @@ public class AuthenticationFilter extends AbstractGatewayFilterFactory<Authentic
                 }
 
                 String authHeader = exchange.getRequest().getHeaders().get(HttpHeaders.AUTHORIZATION).get(0);
-                if (authHeader != null && authHeader.startsWith("Bearer ")) {
-                    authHeader = authHeader.substring(7);
+                if (authHeader != null && authHeader.startsWith(BEARER_)) {
+                    authHeader = authHeader.substring(BEARER_LENGTH);
                 }
                 try {
                     template.getForObject("http://localhost:8765/auth/validate?token=" + authHeader, String.class);

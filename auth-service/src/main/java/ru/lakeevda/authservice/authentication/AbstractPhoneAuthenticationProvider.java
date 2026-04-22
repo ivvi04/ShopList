@@ -1,7 +1,6 @@
-package ru.lakeevda.authservice.config;
+package ru.lakeevda.authservice.authentication;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceAware;
@@ -19,8 +18,8 @@ import org.springframework.security.core.userdetails.cache.NullUserCache;
 import org.springframework.util.Assert;
 import ru.lakeevda.authservice.exception.UserPhoneNotFoundException;
 
+@Slf4j
 public abstract class AbstractPhoneAuthenticationProvider implements AuthenticationProvider, InitializingBean, MessageSourceAware {
-    protected final Log logger = LogFactory.getLog(this.getClass());
     protected MessageSourceAccessor messages = SpringSecurityMessageSource.getAccessor();
     private UserCache userCache = new NullUserCache();
     private boolean forcePrincipalAsString = false;
@@ -41,9 +40,10 @@ public abstract class AbstractPhoneAuthenticationProvider implements Authenticat
     }
 
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-        Assert.isInstanceOf(UserPhonePasswordAuthenticationToken.class, authentication, () -> {
-            return this.messages.getMessage("AbstractUserDetailsAuthenticationProvider.onlySupports", "Only UserPhonePasswordAuthenticationToken is supported");
-        });
+        Assert.isInstanceOf(
+                UserPhonePasswordAuthenticationToken.class,
+                authentication,
+                () -> this.messages.getMessage("AbstractUserDetailsAuthenticationProvider.onlySupports", "Only UserPhonePasswordAuthenticationToken is supported"));
         String userPhone = this.determineUserPhone(authentication);
         boolean cacheWasUsed = true;
         UserDetails user = this.userCache.getUserFromCache(userPhone);
@@ -53,7 +53,7 @@ public abstract class AbstractPhoneAuthenticationProvider implements Authenticat
             try {
                 user = this.retrieveUser(userPhone, (UserPhonePasswordAuthenticationToken)authentication);
             } catch (UserPhoneNotFoundException var6) {
-                this.logger.debug("Failed to find user '" + userPhone + "'");
+                log.debug("Failed to find user '{}'", userPhone);
                 if (!this.hideUserNotFoundExceptions) {
                     throw var6;
                 }
@@ -98,7 +98,7 @@ public abstract class AbstractPhoneAuthenticationProvider implements Authenticat
     protected Authentication createSuccessAuthentication(Object principal, Authentication authentication, UserDetails user) {
         UserPhonePasswordAuthenticationToken result = UserPhonePasswordAuthenticationToken.authenticated(principal, authentication.getCredentials(), this.authoritiesMapper.mapAuthorities(user.getAuthorities()));
         result.setDetails(authentication.getDetails());
-        this.logger.debug("Authenticated user");
+        log.debug("Authenticated user");
         return result;
     }
 
@@ -165,13 +165,13 @@ public abstract class AbstractPhoneAuthenticationProvider implements Authenticat
 
         public void check(UserDetails user) {
             if (!user.isAccountNonLocked()) {
-                AbstractPhoneAuthenticationProvider.this.logger.debug("Failed to authenticate since user account is locked");
+                AbstractPhoneAuthenticationProvider.log.debug("Failed to authenticate since user account is locked");
                 throw new LockedException(AbstractPhoneAuthenticationProvider.this.messages.getMessage("AbstractUserDetailsAuthenticationProvider.locked", "User account is locked"));
             } else if (!user.isEnabled()) {
-                AbstractPhoneAuthenticationProvider.this.logger.debug("Failed to authenticate since user account is disabled");
+                AbstractPhoneAuthenticationProvider.log.debug("Failed to authenticate since user account is disabled");
                 throw new DisabledException(AbstractPhoneAuthenticationProvider.this.messages.getMessage("AbstractUserDetailsAuthenticationProvider.disabled", "User is disabled"));
             } else if (!user.isAccountNonExpired()) {
-                AbstractPhoneAuthenticationProvider.this.logger.debug("Failed to authenticate since user account has expired");
+                AbstractPhoneAuthenticationProvider.log.debug("Failed to authenticate since user account has expired");
                 throw new AccountExpiredException(AbstractPhoneAuthenticationProvider.this.messages.getMessage("AbstractUserDetailsAuthenticationProvider.expired", "User account has expired"));
             }
         }
@@ -183,7 +183,7 @@ public abstract class AbstractPhoneAuthenticationProvider implements Authenticat
 
         public void check(UserDetails user) {
             if (!user.isCredentialsNonExpired()) {
-                AbstractPhoneAuthenticationProvider.this.logger.debug("Failed to authenticate since user account credentials have expired");
+                AbstractPhoneAuthenticationProvider.log.debug("Failed to authenticate since user account credentials have expired");
                 throw new CredentialsExpiredException(AbstractPhoneAuthenticationProvider.this.messages.getMessage("AbstractUserDetailsAuthenticationProvider.credentialsExpired", "User credentials have expired"));
             }
         }

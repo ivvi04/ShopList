@@ -11,7 +11,7 @@ import javax.sql.DataSource;
 
 @Configuration
 @PropertySource("classpath:liquibase.properties")
-public class LiquibaseConfiguration {
+public class LiquibaseConfig {
 
     @Autowired
     private DataSource dataSource;

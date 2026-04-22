@@ -23,15 +23,8 @@ spring:
           predicates:
             - Path=/auth/**
           filters:
-#            - AuthenticationFilter
-            - RewritePath=/auth/(?<path>.*), /$\{path}
-        - id: user-id
-          uri: lb://auth-service
-          predicates:
-            - Path=/user/**
-          filters:
             - AuthenticationFilter
-            - RewritePath=/user/(?<path>.*), /$\{path}
+            - RewritePath=/auth/(?<path>.*), /$\{path}
         - id: list-product-id
           uri: lb://list-product-service
           predicates:
@@ -58,7 +51,5 @@ springdoc:
     urls:
       - name: auth
         url: /v3/api-docs/auth
-      - name: user
-        url: /v3/api-docs/user
       - name: list-product
         url: /v3/api-docs/list-product

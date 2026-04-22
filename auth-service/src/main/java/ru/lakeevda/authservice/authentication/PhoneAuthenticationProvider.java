@@ -1,5 +1,6 @@
-package ru.lakeevda.authservice.config;
+package ru.lakeevda.authservice.authentication;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.security.core.Authentication;
@@ -9,12 +10,12 @@ import org.springframework.security.core.userdetails.UserDetailsPasswordService;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.util.Assert;
-import ru.lakeevda.authservice.entity.User;
+import ru.lakeevda.authservice.entity.UserEntity;
 import ru.lakeevda.authservice.exception.UserPhoneNotFoundException;
 import ru.lakeevda.authservice.service.UserDetailService;
 
+@Slf4j
 public class PhoneAuthenticationProvider extends AbstractPhoneAuthenticationProvider {
-    private static final String USER_NOT_FOUND_PASSWORD = "userNotFoundPassword";
     private PasswordEncoder passwordEncoder;
     private volatile String userNotFoundEncodedPassword;
     private UserDetailService userDetailService;
@@ -30,12 +31,12 @@ public class PhoneAuthenticationProvider extends AbstractPhoneAuthenticationProv
 
     protected void additionalAuthenticationChecks(UserDetails userDetails, UserPhonePasswordAuthenticationToken authentication) throws AuthenticationException {
         if (authentication.getCredentials() == null) {
-            this.logger.debug("Failed to authenticate since no credentials provided");
+            log.debug("Failed to authenticate since no credentials provided");
             throw new BadCredentialsException(this.messages.getMessage("AbstractUserDetailsAuthenticationProvider.badCredentials", "Bad credentials"));
         } else {
             String presentedPassword = authentication.getCredentials().toString();
             if (!this.passwordEncoder.matches(presentedPassword, userDetails.getPassword())) {
-                this.logger.debug("Failed to authenticate since password does not match stored value");
+                log.debug("Failed to authenticate since password does not match stored value");
                 throw new BadCredentialsException(this.messages.getMessage("AbstractUserDetailsAuthenticationProvider.badCredentials", "Bad credentials"));
             }
         }
@@ -45,11 +46,11 @@ public class PhoneAuthenticationProvider extends AbstractPhoneAuthenticationProv
         Assert.notNull(this.userDetailService, "A UserDetailsService must be set");
     }
 
-    protected final User retrieveUser(String userPhone, UserPhonePasswordAuthenticationToken authentication) throws AuthenticationException {
+    protected final UserEntity retrieveUser(String userPhone, UserPhonePasswordAuthenticationToken authentication) throws AuthenticationException {
         this.prepareTimingAttackProtection();
 
         try {
-            User loadedUser = this.getUserDetailService().loadUserByPhone(Long.parseLong(userPhone));
+            UserEntity loadedUser = this.getUserDetailService().loadUserByPhone(Long.parseLong(userPhone));
             if (loadedUser == null) {
                 throw new InternalAuthenticationServiceException("UserDetailsService returned null, which is an interface contract violation");
             } else {

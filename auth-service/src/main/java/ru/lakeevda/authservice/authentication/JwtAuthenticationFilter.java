@@ -1,4 +1,4 @@
-package ru.lakeevda.authservice.config;
+package ru.lakeevda.authservice.authentication;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -12,7 +12,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-import ru.lakeevda.authservice.entity.User;
+import ru.lakeevda.authservice.entity.UserEntity;
 import ru.lakeevda.authservice.service.JwtService;
 import ru.lakeevda.authservice.service.UserDetailService;
 
@@ -41,7 +41,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String jwt = authHeader.substring(BEARER_PREFIX.length());
         String phone = jwtService.extractPhone(jwt);
         if (StringUtils.isNotEmpty(phone) && SecurityContextHolder.getContext().getAuthentication() == null) {
-            User user = userDetailService.loadUserByPhone(Integer.parseInt(phone));
+            UserEntity user = userDetailService.loadUserByPhone(Long.parseLong(phone));
 
             if (jwtService.isTokenValid(jwt, user)) {
                 SecurityContext context = SecurityContextHolder.createEmptyContext();

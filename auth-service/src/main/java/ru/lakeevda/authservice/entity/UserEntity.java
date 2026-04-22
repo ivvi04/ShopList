@@ -1,31 +1,32 @@
 package ru.lakeevda.authservice.entity;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Basic;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.JdbcType;
-import org.hibernate.dialect.PostgreSQLEnumJdbcType;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import ru.lakeevda.authservice.entity.enums.UserRole;
 
 import java.util.Collection;
 import java.util.Collections;
 
 @Entity
 @Data
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "user", schema = "auth_service", catalog = "shoplist")
-public class User implements UserDetails {
+@Table(name = "users", schema = "auth_service", catalog = "shoplist")
+public class UserEntity implements UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     @Column(name = "id", nullable = false)
-    private long id;
+    private Long id;
     @Basic
     @Column(name = "username", nullable = false, length = 100)
     private String username;
@@ -34,19 +35,25 @@ public class User implements UserDetails {
     private String password;
     @Basic
     @Column(name = "phone", nullable = false)
-    private long phone;
+    private Long phone;
     @Basic
     @Column(name = "email", nullable = true, length = 100)
     private String email;
     @Basic
     @Column(name = "role", nullable = false)
-    @Enumerated(EnumType.STRING)
-    @JdbcType(PostgreSQLEnumJdbcType.class)
-    private UserRole role;
+    private String role;
+
+    public UserEntity(String username, String password, Long phone, String email, String role) {
+        this.username = username;
+        this.password = password;
+        this.phone = phone;
+        this.email = email;
+        this.role = role;
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Collections.singletonList(new SimpleGrantedAuthority(role.name()));
+        return Collections.singletonList(new SimpleGrantedAuthority(this.role));
     }
 
     @Override

@@ -16,31 +16,31 @@ import ru.lakeevda.authservice.service.AuthenticationService;
 @RequiredArgsConstructor
 @Tag(name = "Аутентификация")
 public class AuthController {
-    private final AuthenticationService authenticationService;
+    private final AuthenticationService service;
 
     @Operation(summary = "Регистрация пользователя")
     @PostMapping("/sign-up")
     public ResponseEntity<Void> signUp(@RequestBody @Valid SignUpRequest request) {
-        authenticationService.createUser(request);
+        service.signUp(request);
         return ResponseEntity.ok().build();
     }
 
     @Operation(summary = "Авторизация пользователя")
     @PostMapping("/sign-in")
     public ResponseEntity<JwtAuthenticationResponse> signIn(@RequestBody @Valid SignInRequest request) {
-        return ResponseEntity.ok().body(authenticationService.signIn(request));
+        return ResponseEntity.ok().body(service.signIn(request));
     }
 
     @Operation(summary = "Смена пароля")
     @PostMapping("/change-password")
     public ResponseEntity<JwtAuthenticationResponse> changePassword(@RequestBody ChangePasswordRequest changePasswordRequest) {
-        return ResponseEntity.ok().body(authenticationService.changePassword(changePasswordRequest));
+        return ResponseEntity.ok().body(service.changePassword(changePasswordRequest));
     }
 
     @Operation(summary = "Проверка токена")
     @GetMapping("/validate")
     public String validateToken(@RequestParam String token) {
-        if (authenticationService.validateToken(token)) return "Токен валидный";
+        if (service.validateToken(token)) return "Токен валидный";
         else return "Токен не валидный";
     }
 }
