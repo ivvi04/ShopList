@@ -23,6 +23,8 @@
         <sonar.projectKey>lakeevda_shoplist</sonar.projectKey>
         <sonar.organization>shop-list</sonar.organization>
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
+        <org.springframework.boot.version>3.2.4</org.springframework.boot.version>
+        <org.springframework.cloud.version>4.1.1</org.springframework.cloud.version>
     </properties>
 
     <modules>
