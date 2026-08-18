@@ -9,6 +9,8 @@ import java.util.List;
 @Repository
 public interface ProductRepository extends JpaRepository<ProductEntity, Long> {
     List<ProductEntity> findProductsByListId(Long listId);
+
     boolean existsByNameAndListId(String name, Long listId);
+
     void deleteProductsByListIdAndPurchasedTrue(Long listId);
 }

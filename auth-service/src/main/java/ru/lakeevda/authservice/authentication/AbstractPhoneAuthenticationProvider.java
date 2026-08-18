@@ -51,7 +51,7 @@ public abstract class AbstractPhoneAuthenticationProvider implements Authenticat
             cacheWasUsed = false;
 
             try {
-                user = this.retrieveUser(userPhone, (UserPhonePasswordAuthenticationToken)authentication);
+                user = this.retrieveUser(userPhone, (UserPhonePasswordAuthenticationToken) authentication);
             } catch (UserPhoneNotFoundException var6) {
                 log.debug("Failed to find user '{}'", userPhone);
                 if (!this.hideUserNotFoundExceptions) {
@@ -66,16 +66,16 @@ public abstract class AbstractPhoneAuthenticationProvider implements Authenticat
 
         try {
             this.preAuthenticationChecks.check(user);
-            this.additionalAuthenticationChecks(user, (UserPhonePasswordAuthenticationToken)authentication);
+            this.additionalAuthenticationChecks(user, (UserPhonePasswordAuthenticationToken) authentication);
         } catch (AuthenticationException var7) {
             if (!cacheWasUsed) {
                 throw var7;
             }
 
             cacheWasUsed = false;
-            user = this.retrieveUser(userPhone, (UserPhonePasswordAuthenticationToken)authentication);
+            user = this.retrieveUser(userPhone, (UserPhonePasswordAuthenticationToken) authentication);
             this.preAuthenticationChecks.check(user);
-            this.additionalAuthenticationChecks(user, (UserPhonePasswordAuthenticationToken)authentication);
+            this.additionalAuthenticationChecks(user, (UserPhonePasswordAuthenticationToken) authentication);
         }
 
         this.postAuthenticationChecks.check(user);

@@ -13,19 +13,19 @@ public class AdviceController {
 
     @ExceptionHandler(MissingAuthHeaderException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public String missingAuthHeader(MissingAuthHeaderException e){
+    public String missingAuthHeader(MissingAuthHeaderException e) {
         return e.getMessage();
     }
 
     @ExceptionHandler(UnAuthAccessToAppException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    public String unAuthAccessToApp(UnAuthAccessToAppException e){
+    public String unAuthAccessToApp(UnAuthAccessToAppException e) {
         return e.getMessage();
     }
 
     @ExceptionHandler(RuntimeException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public String otherException(RuntimeException e){
+    public String otherException(RuntimeException e) {
         return "Неизвестная ошибка: " + e.getMessage();
     }
 }

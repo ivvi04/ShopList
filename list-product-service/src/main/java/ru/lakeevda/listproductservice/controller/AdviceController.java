@@ -12,19 +12,19 @@ import ru.lakeevda.listproductservice.exception.UserNotAuthorException;
 public class AdviceController {
     @ExceptionHandler(UserNotAuthorException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public String userNotAuthor(UserNotAuthorException e){
+    public String userNotAuthor(UserNotAuthorException e) {
         return e.getMessage();
     }
 
     @ExceptionHandler(DataNotFoundException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public String dataNotFound(DataNotFoundException e){
+    public String dataNotFound(DataNotFoundException e) {
         return e.getMessage();
     }
 
     @ExceptionHandler(RuntimeException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public String otherException(RuntimeException e){
+    public String otherException(RuntimeException e) {
         return "Неизвестная ошибка: " + e.getMessage();
     }
 }
