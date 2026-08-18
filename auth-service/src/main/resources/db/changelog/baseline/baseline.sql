@@ -1,8 +1,6 @@
 -- liquibase formatted sql
 
 -- changeset Denis:baseline-1
-DROP TABLE IF EXISTS auth_service.users;
-
 CREATE TABLE IF NOT EXISTS auth_service.users (
     id          bigserial                       NOT NULL PRIMARY KEY,
     username    varchar                         NOT NULL,

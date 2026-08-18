@@ -3,24 +3,25 @@ package ru.lakeevda.listproductservice.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.lakeevda.listproductservice.dto.ShopListDto;
-import ru.lakeevda.listproductservice.entity.ShopListEntity;
-import ru.lakeevda.listproductservice.entity.User;
+import ru.lakeevda.listproductservice.dto.ListDto;
+import ru.lakeevda.listproductservice.entity.ListEntity;
+import ru.lakeevda.listproductservice.entity.ListUserEntity;
 import ru.lakeevda.listproductservice.enums.ShopListStatus;
 import ru.lakeevda.listproductservice.exception.DataNotFoundException;
 import ru.lakeevda.listproductservice.exception.UserNotAuthorException;
 import ru.lakeevda.listproductservice.repository.ListRepository;
-import ru.lakeevda.listproductservice.repository.UserRepository;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class ListService {
     private final ListRepository listRepository;
 
-    private ShopListEntity findListById(Long id) {
+    private ListEntity findListById(Long id) {
         return listRepository.findById(id).orElseThrow(() ->
                 new DataNotFoundException("Список не найден!"));
     }
@@ -40,70 +41,83 @@ public class ListService {
 //                new DataNotFoundException("Пользователь не найден!"));
 //    }
 
-    private ShopListDto getListDto(ShopListEntity shopList) {
-        return new ShopListDto(shopList.getId(), shopList.getName(), findUserById(shopList.getAuthorId()).getPhone(), shopList.getUsers());
+    private ListDto getListDto(ListEntity shopList) {
+        return new ListDto(shopList.getId(),
+                shopList.getName(),
+                (HashMap<Long, Boolean>) shopList.getListUsers().stream()
+                        .collect(Collectors.toMap(ListUserEntity::getUserPhone,
+                                ListUserEntity::getIsAuthor)));
     }
 
 
-    public ShopListDto getListById(Long id) {
-        ShopListEntity list = findListById(id);
+    public ListDto getListById(Long id) {
+        ListEntity list = findListById(id);
         return getListDto(list);
     }
 
-    public List<ShopListDto> getListByUserPhone(long userPhone) {
-        User user = findUserByPhone(userPhone);
-        List<ShopListEntity> lists = listRepository.findListsByAuthorIdOrUsersContains(user.getId(), user);
-        List<ShopListDto> shopListDtos = new ArrayList<>();
+    public List<ListDto> getListByUserPhone(Long userPhone) {
+        List<ListEntity> lists = listRepository.findListEntitiesByUserPhoneContains(userPhone);
+        List<ListDto> shopListDtos = new ArrayList<>();
         lists.forEach(list -> shopListDtos.add(getListDto(list)));
         return shopListDtos;
     }
 
     @Transactional
-    public ShopListDto addList(ShopListDto newShopList) {
-        User author = findUserByPhone(newShopList.getPhone());
-        ShopListEntity shopList = new ShopListEntity();
-        shopList.setName(newShopList.getName());
-        shopList.setAuthorId(author.getId());
-        shopList.setUsers(newShopList.getUsers());
-        shopList.setStatus(ShopListStatus.CREATED.toString());
-        listRepository.save(shopList);
-        return getListDto(shopList);
+    public ListDto create(ListDto list) {
+        ListEntity listEntity = new ListEntity();
+        listEntity.setName(list.getName());
+        listEntity.setStatus(ShopListStatus.CREATED.toString());
+        listEntity.setListUsers(list.getUserPhones()
+                .entrySet().stream()
+                .map(entry ->
+                        new ListUserEntity(list.getId(), entry.getKey(), entry.getValue()))
+                .toList());
+        listRepository.save(listEntity);
+        return getListDto(listEntity);
     }
 
     @Transactional
-    public void updateList(ShopListDto updateShopList, long phone) {
-        ShopListEntity existShopList = findListById(updateShopList.getId());
-        User user = findUserByPhone(phone);
-        if (existShopList.getAuthorId() != user.getId())
-            throw new UserNotAuthorException("Только у автора есть права на изменение списка!");
-        existShopList.setName(updateShopList.getName());
-        existShopList.setUsers(updateShopList.getUsers());
+    public void update(ListDto list, Long userPhone) {
+        var existShopList = findListById(list.getId());
+        checkAuthor(existShopList.getListUsers(), userPhone);
+        existShopList.setName(list.getName());
         listRepository.save(existShopList);
     }
 
     @Transactional
-    public void deleteList(Long id, long phone) {
-        ShopListEntity list = findListById(id);
-        User user = findUserByPhone(phone);
-        if (list.getAuthorId() != user.getId())
-            throw new UserNotAuthorException("Только у автора есть права на удаление!");
+    public void delete(Long id, Long userPhone) {
+        var list = findListById(id);
+        checkAuthor(list.getListUsers(), userPhone);
         listRepository.delete(list);
-    }
-    @Transactional
-    public ShopListDto addUserToList(Long id, long phone) {
-        ShopListEntity shopList = findListById(id);
-        User user = findUserByPhone(phone);
-        if (shopList.getAuthorId() != user.getId() && !shopList.getUsers().contains(user)) shopList.addUser(user);
-        listRepository.save(shopList);
-        return getListDto(shopList);
     }
 
     @Transactional
-    public ShopListDto deleteUserFromList(Long id, long phone) {
-        ShopListEntity shopList = findListById(id);
-        User user = findUserByPhone(phone);
-        shopList.deleteUser(user);
-        listRepository.save(shopList);
-        return getListDto(shopList);
+    public ListDto addUser(Long id, Long userPhone) {
+        var listEntity = findListById(id);
+        var notHasUserPhone = listEntity.getListUsers().stream()
+                .map(ListUserEntity::getUserPhone)
+                .noneMatch(userPhone::equals);
+        if (notHasUserPhone) {
+            listEntity.getListUsers().add(new ListUserEntity(id, userPhone, Boolean.FALSE));
+            listRepository.save(listEntity);
+        }
+        return getListDto(listEntity);
+    }
+
+    @Transactional
+    public ListDto deleteUser(Long id, Long userPhone) {
+        var listEntity = findListById(id);
+
+        listEntity.getListUsers().removeIf(listUserEntity -> listUserEntity.getUserPhone().equals(userPhone));
+        listRepository.save(listEntity);
+        return getListDto(listEntity);
+    }
+
+    private static void checkAuthor(List<ListUserEntity> listUserEntities, Long userPhone) {
+        listUserEntities.stream()
+                .filter(listUserEntity -> userPhone.equals(listUserEntity.getUserPhone())
+                        && listUserEntity.getIsAuthor())
+                .findFirst()
+                .orElseThrow(() -> new UserNotAuthorException("Только у автора есть права на удаление!"));
     }
 }

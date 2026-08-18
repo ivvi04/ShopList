@@ -1,15 +1,10 @@
 package ru.lakeevda.authservice.entity;
 
-import jakarta.persistence.Basic;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.jspecify.annotations.NullMarked;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -27,19 +22,19 @@ public class UserEntity implements UserDetails {
     @Id
     @Column(name = "id", nullable = false)
     private Long id;
-    @Basic
+
     @Column(name = "username", nullable = false, length = 100)
     private String username;
-    @Basic
+
     @Column(name = "password", nullable = false, length = -1)
     private String password;
-    @Basic
+
     @Column(name = "phone", nullable = false)
     private Long phone;
-    @Basic
-    @Column(name = "email", nullable = true, length = 100)
+
+    @Column(name = "email", length = 100)
     private String email;
-    @Basic
+
     @Column(name = "role", nullable = false)
     private String role;
 
@@ -52,27 +47,8 @@ public class UserEntity implements UserDetails {
     }
 
     @Override
+    @NullMarked
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return Collections.singletonList(new SimpleGrantedAuthority(this.role));
-    }
-
-    @Override
-    public boolean isAccountNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isAccountNonLocked() {
-        return true;
-    }
-
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return true;
     }
 }

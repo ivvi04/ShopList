@@ -11,7 +11,7 @@ public class UserPhonePasswordAuthenticationToken extends AbstractAuthentication
     private Object credentials;
 
     public UserPhonePasswordAuthenticationToken(Object principal, Object credentials) {
-        super(null);
+        super((Collection) null);
         this.principal = principal;
         this.credentials = credentials;
         this.setAuthenticated(false);

@@ -9,6 +9,8 @@ import org.springframework.web.client.RestTemplate;
 import ru.lakeevda.gatewayservice.exception.MissingAuthHeaderException;
 import ru.lakeevda.gatewayservice.exception.UnAuthAccessToAppException;
 
+import java.util.Objects;
+
 @Component
 public class AuthenticationFilter extends AbstractGatewayFilterFactory<AuthenticationFilter.Config> {
     private static final String BEARER_ = "Bearer ";
@@ -27,12 +29,13 @@ public class AuthenticationFilter extends AbstractGatewayFilterFactory<Authentic
     public GatewayFilter apply(Config config) {
         return ((exchange, chain) -> {
             if (validator.isSecured.test(exchange.getRequest())) {
-                if (!exchange.getRequest().getHeaders().containsKey(HttpHeaders.AUTHORIZATION)) {
+                if (!exchange.getRequest().getHeaders().containsHeader(HttpHeaders.AUTHORIZATION)) {
                     throw new MissingAuthHeaderException("Отсутствует заголовок авторизации");
                 }
 
-                String authHeader = exchange.getRequest().getHeaders().get(HttpHeaders.AUTHORIZATION).get(0);
-                if (authHeader != null && authHeader.startsWith(BEARER_)) {
+                String authHeader = Objects.requireNonNull(exchange.getRequest()
+                        .getHeaders().get(HttpHeaders.AUTHORIZATION)).getFirst();
+                if (authHeader.startsWith(BEARER_)) {
                     authHeader = authHeader.substring(BEARER_LENGTH);
                 }
                 try {

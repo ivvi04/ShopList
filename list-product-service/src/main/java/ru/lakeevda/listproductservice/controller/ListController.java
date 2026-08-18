@@ -3,7 +3,7 @@ package ru.lakeevda.listproductservice.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.lakeevda.listproductservice.dto.ShopListDto;
+import ru.lakeevda.listproductservice.dto.ListDto;
 import ru.lakeevda.listproductservice.service.ListService;
 
 import java.util.List;
@@ -15,48 +15,48 @@ public class ListController {
     private final ListService listService;
 
     @GetMapping("/{id}")
-    public ResponseEntity<ShopListDto> getList(@PathVariable Long id) {
-        ShopListDto list = listService.getListById(id);
+    public ResponseEntity<ListDto> getList(@PathVariable Long id) {
+        ListDto list = listService.getListById(id);
         return ResponseEntity.ok().body(list);
     }
 
     @GetMapping("/phone/{phone}")
-    public ResponseEntity<List<ShopListDto>> getLists(@PathVariable long phone) {
-        List<ShopListDto> lists = listService.getListByUserPhone(phone);
+    public ResponseEntity<List<ListDto>> getLists(@PathVariable long phone) {
+        List<ListDto> lists = listService.getListByUserPhone(phone);
         return ResponseEntity.ok().body(lists);
     }
 
     @PostMapping
-    public ResponseEntity<ShopListDto> addList(@RequestBody ShopListDto list) {
-        ShopListDto resultList = listService.addList(list);
+    public ResponseEntity<ListDto> addList(@RequestBody ListDto list) {
+        ListDto resultList = listService.create(list);
         return ResponseEntity.ok().body(resultList);
     }
 
     @PutMapping("/phone/{phone}/update")
     public ResponseEntity<Void> updateList(@PathVariable long phone,
-                                           @RequestBody ShopListDto list) {
-        listService.updateList(list, phone);
+                                           @RequestBody ListDto list) {
+        listService.update(list, phone);
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/phone/{phone}/delete/{id}")
     public ResponseEntity<Void> deleteList(@PathVariable long phone,
                                            @PathVariable Long id) {
-        listService.deleteList(id, phone);
+        listService.delete(id, phone);
         return ResponseEntity.ok().build();
     }
 
     @PutMapping("/{id}/user/add")
-    public ResponseEntity<ShopListDto> addUserToList(@PathVariable Long id,
-                                                     @RequestParam long phone) {
-        ShopListDto list = listService.addUserToList(id, phone);
+    public ResponseEntity<ListDto> addUserToList(@PathVariable Long id,
+                                                 @RequestParam long phone) {
+        ListDto list = listService.addUser(id, phone);
         return ResponseEntity.ok().body(list);
     }
 
     @PutMapping("/{id}/user/delete")
-    public ResponseEntity<ShopListDto> deleteUserFromList(@PathVariable Long id,
-                                                          @RequestParam long phone) {
-        ShopListDto list = listService.deleteUserFromList(id, phone);
+    public ResponseEntity<ListDto> deleteUserFromList(@PathVariable Long id,
+                                                      @RequestParam long phone) {
+        ListDto list = listService.deleteUser(id, phone);
         return ResponseEntity.ok().body(list);
     }
 }

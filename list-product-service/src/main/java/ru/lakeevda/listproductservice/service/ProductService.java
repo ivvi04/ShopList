@@ -26,7 +26,7 @@ public class ProductService {
 
     @Transactional
     public ProductEntity addProduct(ProductEntity newProduct) {
-        if (productRepository.existsByNameAndListId(newProduct.getName(), newProduct.getShopListId()))
+        if (productRepository.existsByNameAndListId(newProduct.getName(), newProduct.getListId()))
             throw new ProductExistException("Продукт с таким название уже существует!");
         return productRepository.save(newProduct);
     }
