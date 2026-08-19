@@ -1,7 +1,7 @@
 package ru.lakeevda.authservice.service;
 
-import org.mapstruct.InheritConfiguration;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;
 import org.mapstruct.MappingTarget;
 import ru.lakeevda.authservice.dto.UserRequest;
@@ -13,6 +13,8 @@ public interface UserServiceMapper {
 
     UserResponse toResponse(UserEntity entity);
 
-    @InheritConfiguration(name = "toEntity")
+    @Mapping(target = "password", ignore = true)
+    @Mapping(target = "role", ignore = true)
+    @Mapping(target = "authorities", ignore = true)
     UserEntity partialUpdate(UserRequest dto, @MappingTarget UserEntity entity);
 }
