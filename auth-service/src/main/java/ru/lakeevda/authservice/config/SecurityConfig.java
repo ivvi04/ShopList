@@ -15,7 +15,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import ru.lakeevda.authservice.authentication.JwtAuthenticationFilter;
 import ru.lakeevda.authservice.authentication.PhoneAuthenticationProvider;
-import ru.lakeevda.authservice.service.UserDetailService;
+import ru.lakeevda.authservice.service.UserService;
 
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
@@ -25,10 +25,10 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
-    private final UserDetailService userDetailService;
+    private final UserService userService;
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) {
         return http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> {
@@ -51,13 +51,13 @@ public class SecurityConfig {
     @Bean
     public AuthenticationProvider authenticationProvider() {
         PhoneAuthenticationProvider authenticationProvider = new PhoneAuthenticationProvider();
-        authenticationProvider.setUserDetailService(userDetailService);
+        authenticationProvider.setUserService(userService);
         authenticationProvider.setPasswordEncoder(passwordEncoder());
         return authenticationProvider;
     }
 
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) {
         return config.getAuthenticationManager();
     }
 }

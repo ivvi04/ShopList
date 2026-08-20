@@ -26,10 +26,6 @@ public class UserPhonePasswordAuthenticationToken extends AbstractAuthentication
         super.setAuthenticated(true);
     }
 
-    public static UserPhonePasswordAuthenticationToken unauthenticated(Object principal, Object credentials) {
-        return new UserPhonePasswordAuthenticationToken(principal, credentials);
-    }
-
     public static UserPhonePasswordAuthenticationToken authenticated(Object principal, Object credentials, Collection<? extends GrantedAuthority> authorities) {
         return new UserPhonePasswordAuthenticationToken(principal, credentials, authorities);
     }

@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS auth_service.users
     id       bigserial NOT NULL PRIMARY KEY,
     username varchar   NOT NULL,
     password text      NOT NULL,
-    phone    bigint    NOT NULL,
+    phone    text      NOT NULL,
     email    text,
     role     varchar   NOT NULL,
     image    text,

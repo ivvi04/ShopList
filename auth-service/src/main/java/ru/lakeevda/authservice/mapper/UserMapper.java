@@ -1,4 +1,4 @@
-package ru.lakeevda.authservice.service;
+package ru.lakeevda.authservice.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -9,7 +9,7 @@ import ru.lakeevda.authservice.dto.UserResponse;
 import ru.lakeevda.authservice.entity.UserEntity;
 
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
-public interface UserServiceMapper {
+public interface UserMapper {
 
     UserResponse toResponse(UserEntity entity);
 

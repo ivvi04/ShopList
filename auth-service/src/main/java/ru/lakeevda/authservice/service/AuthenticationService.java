@@ -21,12 +21,12 @@ public class AuthenticationService {
     private final JwtService jwtService;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
-    private final UserDetailService userDetailService;
+    private final UserService userService;
 
     private final UserRepository userRepository;
 
-    private JwtAuthenticationResponse generateToken(long phone) {
-        UserEntity user = userDetailService.loadUserByPhone(phone);
+    private JwtAuthenticationResponse generateToken(String phone) {
+        UserEntity user = userService.findUserByPhone(phone);
 
         String jwt = jwtService.generateToken(user);
         return new JwtAuthenticationResponse(user.getPhone(), jwt);
@@ -41,7 +41,7 @@ public class AuthenticationService {
                 request.getEmail(),
                 UserRole.USER.toString());
 
-        create(user);
+        create(user, true);
     }
 
     public JwtAuthenticationResponse signIn(SignInRequest request) {
@@ -52,19 +52,13 @@ public class AuthenticationService {
         return generateToken(request.getPhone());
     }
 
-    public boolean validateToken(ValidTokenRequest request) {
-        UserEntity user = userDetailService.loadUserByPhone(request.getPhone());
-
-        return jwtService.isTokenValid(request.getToken(), user);
-    }
-
     public boolean validateToken(String token) {
         return jwtService.isTokenValid(token);
     }
 
     @Transactional
     public JwtAuthenticationResponse changePassword(ChangePasswordRequest request) {
-        UserEntity user = userDetailService.loadUserByPhone(request.getPhone());
+        UserEntity user = userService.findUserByPhone(request.getPhone());
         if (!passwordEncoder.matches(request.getOldPassword(), user.getPassword()))
             throw new OldPasswordIncorrectException("Старый пароль некорректный!");
         if (!request.getPassword().equals(request.getConfirmPassword()))
@@ -78,11 +72,7 @@ public class AuthenticationService {
         return generateToken(request.getPhone());
     }
 
-    private UserEntity create(UserEntity user) {
-        return create(user, true);
-    }
-
-    private UserEntity create(UserEntity user, boolean checked) {
+    private void create(UserEntity user, boolean checked) {
         if (checked) {
             if (userRepository.existsByPhone(user.getPhone()))
                 throw new UserPhoneExistException("Пользователь с таким телефоном уже существует!");
@@ -91,6 +81,6 @@ public class AuthenticationService {
             if (user.getUsername().isEmpty()) user.setUsername("user" + user.getId());
             user.setRole(UserRole.USER.toString());
         }
-        return userRepository.save(user);
+        userRepository.save(user);
     }
 }

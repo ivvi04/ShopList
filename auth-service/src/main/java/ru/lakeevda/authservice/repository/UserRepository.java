@@ -12,12 +12,13 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
 
     Optional<UserEntity> findByUsername(String username);
 
-    Optional<UserEntity> findByPhone(long phone);
+    Optional<UserEntity> findByPhone(String phone);
 
-    boolean existsByPhone(long phone);
+    boolean existsByPhone(String phone);
 
     boolean existsByEmail(String email);
 
-    @Query(value = "select * from public.user u where cast(u.phone as text) like :phone%", nativeQuery = true)
+    @Query(value = "select * from auth_service.users u where cast(u.phone as text) like concat(:phone, '%')",
+            nativeQuery = true)
     List<UserEntity> findUsersByPhoneStartsWith(@Param("phone") String phone);
 }

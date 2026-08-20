@@ -24,7 +24,7 @@ public class SignUpRequest {
 
     @Schema(description = "Телефон", example = "89121234567")
     @Size(min = 11, max = 11, message = "Длина телефона должна быть 11 символов")
-    private Long phone;
+    private String phone;
 
     @Schema(description = "Адрес электронной почты", example = "user@mail.com")
     @Size(min = 5, max = 255, message = "Адрес электронной почты должен содержать от 5 до 255 символов")

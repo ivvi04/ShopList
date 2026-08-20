@@ -1,5 +1,7 @@
 package ru.lakeevda.authservice.authentication;
 
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
@@ -12,13 +14,17 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.util.Assert;
 import ru.lakeevda.authservice.entity.UserEntity;
 import ru.lakeevda.authservice.exception.UserPhoneNotFoundException;
-import ru.lakeevda.authservice.service.UserDetailService;
+import ru.lakeevda.authservice.service.UserService;
 
+import java.util.Objects;
+
+@Getter
+@Setter
 @Slf4j
 public class PhoneAuthenticationProvider extends AbstractPhoneAuthenticationProvider {
     private PasswordEncoder passwordEncoder;
     private volatile String userNotFoundEncodedPassword;
-    private UserDetailService userDetailService;
+    private UserService userService;
     private UserDetailsPasswordService userDetailsPasswordService;
 
     public PhoneAuthenticationProvider() {
@@ -43,14 +49,14 @@ public class PhoneAuthenticationProvider extends AbstractPhoneAuthenticationProv
     }
 
     protected void doAfterPropertiesSet() {
-        Assert.notNull(this.userDetailService, "A UserDetailsService must be set");
+        Assert.notNull(this.userService, "A UserDetailsService must be set");
     }
 
     protected final UserEntity retrieveUser(String userPhone, UserPhonePasswordAuthenticationToken authentication) throws AuthenticationException {
         this.prepareTimingAttackProtection();
 
         try {
-            UserEntity loadedUser = this.getUserDetailService().loadUserByPhone(Long.parseLong(userPhone));
+            UserEntity loadedUser = this.getUserService().findUserByPhone(userPhone);
             if (loadedUser == null) {
                 throw new InternalAuthenticationServiceException("UserDetailsService returned null, which is an interface contract violation");
             } else {
@@ -69,7 +75,7 @@ public class PhoneAuthenticationProvider extends AbstractPhoneAuthenticationProv
     protected Authentication createSuccessAuthentication(Object principal, Authentication authentication, UserDetails user) {
         boolean upgradeEncoding = this.userDetailsPasswordService != null && this.passwordEncoder.upgradeEncoding(user.getPassword());
         if (upgradeEncoding) {
-            String presentedPassword = authentication.getCredentials().toString();
+            String presentedPassword = Objects.requireNonNull(authentication.getCredentials()).toString();
             String newPassword = this.passwordEncoder.encode(presentedPassword);
             user = this.userDetailsPasswordService.updatePassword(user, newPassword);
         }
@@ -98,19 +104,4 @@ public class PhoneAuthenticationProvider extends AbstractPhoneAuthenticationProv
         this.userNotFoundEncodedPassword = null;
     }
 
-    protected PasswordEncoder getPasswordEncoder() {
-        return this.passwordEncoder;
-    }
-
-    public void setUserDetailService(UserDetailService userDetailService) {
-        this.userDetailService = userDetailService;
-    }
-
-    protected UserDetailService getUserDetailService() {
-        return this.userDetailService;
-    }
-
-    public void setUserDetailsPasswordService(UserDetailsPasswordService userDetailsPasswordService) {
-        this.userDetailsPasswordService = userDetailsPasswordService;
-    }
 }

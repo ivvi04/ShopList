@@ -1,6 +1,9 @@
 package ru.lakeevda.authservice.authentication;
 
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.jspecify.annotations.NonNull;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceAware;
@@ -18,9 +21,12 @@ import org.springframework.security.core.userdetails.cache.NullUserCache;
 import org.springframework.util.Assert;
 import ru.lakeevda.authservice.exception.UserPhoneNotFoundException;
 
+@Getter
+@Setter
 @Slf4j
 public abstract class AbstractPhoneAuthenticationProvider implements AuthenticationProvider, InitializingBean, MessageSourceAware {
     protected MessageSourceAccessor messages = SpringSecurityMessageSource.getAccessor();
+
     private UserCache userCache = new NullUserCache();
     private boolean forcePrincipalAsString = false;
     protected boolean hideUserNotFoundExceptions = true;
@@ -33,13 +39,13 @@ public abstract class AbstractPhoneAuthenticationProvider implements Authenticat
 
     protected abstract void additionalAuthenticationChecks(UserDetails userDetails, UserPhonePasswordAuthenticationToken authentication) throws AuthenticationException;
 
-    public final void afterPropertiesSet() throws Exception {
+    public final void afterPropertiesSet() {
         Assert.notNull(this.userCache, "A user cache must be set");
         Assert.notNull(this.messages, "A message source must be set");
         this.doAfterPropertiesSet();
     }
 
-    public Authentication authenticate(Authentication authentication) throws AuthenticationException {
+    public Authentication authenticate(@NonNull Authentication authentication) throws AuthenticationException {
         Assert.isInstanceOf(
                 UserPhonePasswordAuthenticationToken.class,
                 authentication,
@@ -102,61 +108,17 @@ public abstract class AbstractPhoneAuthenticationProvider implements Authenticat
         return result;
     }
 
-    protected void doAfterPropertiesSet() throws Exception {
-    }
-
-    public UserCache getUserCache() {
-        return this.userCache;
-    }
-
-    public boolean isForcePrincipalAsString() {
-        return this.forcePrincipalAsString;
-    }
-
-    public boolean isHideUserNotFoundExceptions() {
-        return this.hideUserNotFoundExceptions;
+    protected void doAfterPropertiesSet() {
     }
 
     protected abstract UserDetails retrieveUser(String username, UserPhonePasswordAuthenticationToken authentication) throws AuthenticationException;
 
-    public void setForcePrincipalAsString(boolean forcePrincipalAsString) {
-        this.forcePrincipalAsString = forcePrincipalAsString;
-    }
-
-    public void setHideUserNotFoundExceptions(boolean hideUserNotFoundExceptions) {
-        this.hideUserNotFoundExceptions = hideUserNotFoundExceptions;
-    }
-
-    public void setMessageSource(MessageSource messageSource) {
+    public void setMessageSource(@NonNull MessageSource messageSource) {
         this.messages = new MessageSourceAccessor(messageSource);
     }
 
-    public void setUserCache(UserCache userCache) {
-        this.userCache = userCache;
-    }
-
-    public boolean supports(Class<?> authentication) {
+    public boolean supports(@NonNull Class<?> authentication) {
         return UserPhonePasswordAuthenticationToken.class.isAssignableFrom(authentication);
-    }
-
-    protected UserDetailsChecker getPreAuthenticationChecks() {
-        return this.preAuthenticationChecks;
-    }
-
-    public void setPreAuthenticationChecks(UserDetailsChecker preAuthenticationChecks) {
-        this.preAuthenticationChecks = preAuthenticationChecks;
-    }
-
-    protected UserDetailsChecker getPostAuthenticationChecks() {
-        return this.postAuthenticationChecks;
-    }
-
-    public void setPostAuthenticationChecks(UserDetailsChecker postAuthenticationChecks) {
-        this.postAuthenticationChecks = postAuthenticationChecks;
-    }
-
-    public void setAuthoritiesMapper(GrantedAuthoritiesMapper authoritiesMapper) {
-        this.authoritiesMapper = authoritiesMapper;
     }
 
     private class DefaultPreAuthenticationChecks implements UserDetailsChecker {

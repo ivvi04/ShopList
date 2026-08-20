@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import ru.lakeevda.authservice.entity.UserEntity;
 import ru.lakeevda.authservice.service.JwtService;
-import ru.lakeevda.authservice.service.UserDetailService;
+import ru.lakeevda.authservice.service.UserService;
 
 import java.io.IOException;
 
@@ -24,7 +24,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     public static final String BEARER_PREFIX = "Bearer ";
     public static final String HEADER_NAME = "Authorization";
     private final JwtService jwtService;
-    private final UserDetailService userDetailService;
+    private final UserService userService;
 
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request,
@@ -32,7 +32,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                     @NonNull FilterChain filterChain)
             throws ServletException, IOException {
         String authHeader = request.getHeader(HEADER_NAME);
-        if (StringUtils.isEmpty(authHeader) || !StringUtils.startsWith(authHeader, BEARER_PREFIX)) {
+        if (StringUtils.isEmpty(authHeader) || !authHeader.startsWith(BEARER_PREFIX)) {
             filterChain.doFilter(request, response);
             return;
         }
@@ -40,7 +40,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String jwt = authHeader.substring(BEARER_PREFIX.length());
         String phone = jwtService.extractPhone(jwt);
         if (StringUtils.isNotEmpty(phone) && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserEntity user = userDetailService.loadUserByPhone(Long.parseLong(phone));
+            UserEntity user = userService.findUserByPhone(phone);
 
             if (jwtService.isTokenValid(jwt, user)) {
                 SecurityContext context = SecurityContextHolder.createEmptyContext();

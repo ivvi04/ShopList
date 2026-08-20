@@ -1,6 +1,10 @@
 package ru.lakeevda.authservice.service;
 
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.lakeevda.authservice.dto.UserRequest;
@@ -8,6 +12,7 @@ import ru.lakeevda.authservice.dto.UserResponse;
 import ru.lakeevda.authservice.entity.UserEntity;
 import ru.lakeevda.authservice.exception.DataNotFoundException;
 import ru.lakeevda.authservice.exception.UserExistException;
+import ru.lakeevda.authservice.mapper.UserMapper;
 import ru.lakeevda.authservice.repository.UserRepository;
 
 import java.util.List;
@@ -16,12 +21,17 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class UserService {
+public class UserService implements UserDetailsService {
 
     private final UserRepository repository;
-    private final UserServiceMapper mapper;
+    private final UserMapper mapper;
 
-    public UserResponse getUserByPhone(Long phone) {
+    public UserEntity findUserByPhone(String phone) {
+        return repository.findByPhone(phone)
+                .orElseThrow(() -> new DataNotFoundException("Пользователь не найден!"));
+    }
+
+    public UserResponse getUserByPhone(String phone) {
         UserEntity user = findUserByPhone(phone);
         return mapper.toResponse(user);
     }
@@ -41,8 +51,9 @@ public class UserService {
         return mapper.toResponse(repository.save(existUser));
     }
 
-    private UserEntity findUserByPhone(Long phone) {
-        return repository.findByPhone(phone)
-                .orElseThrow(() -> new DataNotFoundException("Пользователь не найден!"));
+    @Override
+    public UserDetails loadUserByUsername(@NonNull String username) throws UsernameNotFoundException {
+        return repository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("Пользователь не найден"));
     }
 }

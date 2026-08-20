@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @Schema(description = "Ответ c токеном доступа")
 public class JwtAuthenticationResponse {
     @Schema(description = "Телефон пользователя", example = "89121234567")
-    private Long phone;
+    private String phone;
 
     @Schema(description = "Токен доступа", example = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImV4cCI6MTYyMjUwNj...")
     private String token;

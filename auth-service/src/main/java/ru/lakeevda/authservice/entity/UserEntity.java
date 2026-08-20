@@ -30,7 +30,7 @@ public class UserEntity implements UserDetails {
     private String password;
 
     @Column(name = "phone", nullable = false)
-    private Long phone;
+    private String phone;
 
     @Column(name = "email", length = 100)
     private String email;
@@ -38,7 +38,7 @@ public class UserEntity implements UserDetails {
     @Column(name = "role", nullable = false)
     private String role;
 
-    public UserEntity(String username, String password, Long phone, String email, String role) {
+    public UserEntity(String username, String password, String phone, String email, String role) {
         this.username = username;
         this.password = password;
         this.phone = phone;

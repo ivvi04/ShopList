@@ -18,7 +18,7 @@ public class UserRequest {
     private String username;
 
     @Schema(description = "Телефон пользователя", example = "89121234567")
-    private Long phone;
+    private String phone;
 
     @Schema(description = "Адрес электронной почты", example = "user@mail.com")
     private String email;

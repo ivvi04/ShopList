@@ -18,7 +18,7 @@ public class UserController {
 
     @Operation(summary = "Получение пользователя по номеру телефона")
     @GetMapping("/{phone}")
-    public ResponseEntity<UserResponse> getUser(@PathVariable Long phone) {
+    public ResponseEntity<UserResponse> getUser(@PathVariable String phone) {
         UserResponse user = service.getUserByPhone(phone);
         return ResponseEntity.ok().body(user);
     }
