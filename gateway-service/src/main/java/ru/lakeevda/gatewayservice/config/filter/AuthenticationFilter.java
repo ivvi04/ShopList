@@ -15,6 +15,7 @@ import java.util.Objects;
 public class AuthenticationFilter extends AbstractGatewayFilterFactory<AuthenticationFilter.Config> {
     private static final String BEARER_ = "Bearer ";
     private static final int BEARER_LENGTH = 7;
+    public static final String URL_VALIDATE_TOKEN = "http://localhost:8765/auth/validate?token=%s";
 
     @Autowired
     private RouteValidator validator;
@@ -39,7 +40,7 @@ public class AuthenticationFilter extends AbstractGatewayFilterFactory<Authentic
                     authHeader = authHeader.substring(BEARER_LENGTH);
                 }
                 try {
-                    template.getForObject("http://localhost:8765/auth/validate?token=" + authHeader, String.class);
+                    template.getForObject(String.format(URL_VALIDATE_TOKEN, authHeader), String.class);
                 } catch (Exception e) {
                     throw new UnAuthAccessToAppException("Несанкционированный доступ к приложению");
                 }

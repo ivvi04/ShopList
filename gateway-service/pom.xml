@@ -22,14 +22,9 @@
             <version>${spring-boot-starter.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-webflux</artifactId>
-            <version>${spring-boot-starter.version}</version>
-        </dependency>
-        <dependency>
             <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-gateway</artifactId>
-            <version>${spring-cloud-starter-gateway.version}</version>
+            <artifactId>spring-cloud-starter-gateway-server-webflux</artifactId>
+            <version>${spring-cloud-starter.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.cloud</groupId>
