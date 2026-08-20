@@ -1,11 +1,13 @@
 package ru.lakeevda.authservice.authentication;
 
+import lombok.Getter;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.util.Assert;
 
 import java.util.Collection;
 
+@Getter
 public class UserPhonePasswordAuthenticationToken extends AbstractAuthenticationToken {
     private final Object principal;
     private Object credentials;
@@ -30,14 +32,6 @@ public class UserPhonePasswordAuthenticationToken extends AbstractAuthentication
 
     public static UserPhonePasswordAuthenticationToken authenticated(Object principal, Object credentials, Collection<? extends GrantedAuthority> authorities) {
         return new UserPhonePasswordAuthenticationToken(principal, credentials, authorities);
-    }
-
-    public Object getCredentials() {
-        return this.credentials;
-    }
-
-    public Object getPrincipal() {
-        return this.principal;
     }
 
     public void setAuthenticated(boolean isAuthenticated) throws IllegalArgumentException {

@@ -26,10 +26,10 @@ ALTER TABLE IF EXISTS list_product_service.list_users
 CREATE TABLE IF NOT EXISTS list_product_service.products
 (
     id        bigserial PRIMARY KEY NOT NULL,
+    list_id   bigint                NOT NULL,
     name      text                  NOT NULL,
     price     numeric,
     url       text,
-    list_id   bigint                NOT NULL,
     image     text,
     purchased boolean               NOT NULL DEFAULT false,
     CONSTRAINT name_list_id_u UNIQUE (name, list_id),
