@@ -24,7 +24,7 @@ public class ProductUseCaseImpl implements ProductUseCase {
     private final ProductRepository productRepository;
 
     @Override
-    public ProductDto getProductById(Long id) {
+    public ProductDto getById(Long id) {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new DataNotFoundException("Продукт не найден!"));
         return ProductMapper.toDto(product);

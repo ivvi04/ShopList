@@ -20,27 +20,27 @@ public class ListController {
         return ResponseEntity.ok().body(list);
     }
 
-    @GetMapping("/phone/{phone}")
-    public ResponseEntity<List<ListDto>> getLists(@PathVariable long phone) {
-        List<ListDto> lists = listUseCase.getListsByUserPhone(phone);
-        return ResponseEntity.ok().body(lists);
-    }
-
     @PostMapping
     public ResponseEntity<ListDto> createList(@RequestBody ListDto list) {
         ListDto resultList = listUseCase.create(list);
         return ResponseEntity.ok().body(resultList);
     }
 
-    @PutMapping("/phone/{phone}/update")
-    public ResponseEntity<Void> updateList(@PathVariable long phone,
+    @GetMapping("/phone/{phone}")
+    public ResponseEntity<List<ListDto>> getLists(@PathVariable Long phone) {
+        List<ListDto> lists = listUseCase.getAllByPhone(phone);
+        return ResponseEntity.ok().body(lists);
+    }
+
+    @PutMapping("/phone/{phone}")
+    public ResponseEntity<Void> updateList(@PathVariable Long phone,
                                            @RequestBody ListDto list) {
         listUseCase.update(list, phone);
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("/phone/{phone}/delete/{id}")
-    public ResponseEntity<Void> deleteList(@PathVariable long phone,
+    @DeleteMapping("/phone/{phone}/{id}")
+    public ResponseEntity<Void> deleteList(@PathVariable Long phone,
                                            @PathVariable Long id) {
         listUseCase.delete(id, phone);
         return ResponseEntity.ok().build();
@@ -48,14 +48,14 @@ public class ListController {
 
     @PutMapping("/{id}/user/add")
     public ResponseEntity<ListDto> addUser(@PathVariable Long id,
-                                           @RequestParam long phone) {
+                                           @RequestParam Long phone) {
         ListDto list = listUseCase.addUser(id, phone);
         return ResponseEntity.ok().body(list);
     }
 
     @PutMapping("/{id}/user/delete")
     public ResponseEntity<ListDto> deleteUser(@PathVariable Long id,
-                                              @RequestParam long phone) {
+                                              @RequestParam Long phone) {
         ListDto list = listUseCase.deleteUser(id, phone);
         return ResponseEntity.ok().body(list);
     }

@@ -31,8 +31,8 @@ public class ListUseCaseImpl implements ListUseCase {
     }
 
     @Override
-    public java.util.List<ListDto> getListsByUserPhone(Long userPhone) {
-        java.util.List<List> lists = repository.findAllByUserPhone(ListUserPhone.of(userPhone));
+    public java.util.List<ListDto> getAllByPhone(Long phone) {
+        java.util.List<List> lists = repository.findAllByUserPhone(ListUserPhone.of(phone));
         return lists.stream()
                 .map(ListMapper::toDto)
                 .collect(Collectors.toList());
@@ -53,10 +53,10 @@ public class ListUseCaseImpl implements ListUseCase {
     }
 
     @Override
-    public void update(ListDto listDto, Long userPhone) {
+    public void update(ListDto listDto, Long phone) {
         List list = getList(listDto.id());
 
-        if (!list.isUserAuthor(ListUserPhone.of(userPhone))) {
+        if (!list.isUserAuthor(ListUserPhone.of(phone))) {
             throw new UserNotAuthorException("Только у автора есть права на редактирование!");
         }
 
@@ -65,10 +65,10 @@ public class ListUseCaseImpl implements ListUseCase {
     }
 
     @Override
-    public void delete(Long id, Long userPhone) {
+    public void delete(Long id, Long phone) {
         List listEntity = getList(id);
 
-        if (!listEntity.isUserAuthor(ListUserPhone.of(userPhone))) {
+        if (!listEntity.isUserAuthor(ListUserPhone.of(phone))) {
             throw new UserNotAuthorException("Только у автора есть права на удаление!");
         }
 
@@ -76,10 +76,10 @@ public class ListUseCaseImpl implements ListUseCase {
     }
 
     @Override
-    public ListDto addUser(Long id, Long userPhone) {
+    public ListDto addUser(Long id, Long phone) {
         List list = getList(id);
 
-        ListUserPhone listUserPhone = ListUserPhone.of(userPhone);
+        ListUserPhone listUserPhone = ListUserPhone.of(phone);
 
         if (!list.hasUser(listUserPhone)) {
             list.addListUser(listUserPhone, false);
@@ -90,10 +90,10 @@ public class ListUseCaseImpl implements ListUseCase {
     }
 
     @Override
-    public ListDto deleteUser(Long id, Long userPhone) {
+    public ListDto deleteUser(Long id, Long phone) {
         List list = getList(id);
 
-        list.removeListUser(ListUserPhone.of(userPhone));
+        list.removeListUser(ListUserPhone.of(phone));
         return ListMapper.toDto(list);
     }
 

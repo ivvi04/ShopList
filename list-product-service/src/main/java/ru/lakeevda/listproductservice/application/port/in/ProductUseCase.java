@@ -5,7 +5,7 @@ import ru.lakeevda.listproductservice.application.boundary.model.product.Product
 import java.util.List;
 
 public interface ProductUseCase {
-    ProductDto getProductById(Long id);
+    ProductDto getById(Long id);
     List<ProductDto> getProductsByListId(Long listId);
     ProductDto create(ProductDto product);
     void update(ProductDto product);
