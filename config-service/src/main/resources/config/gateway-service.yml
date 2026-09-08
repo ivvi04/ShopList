@@ -14,51 +14,44 @@ eureka:
 spring:
   cloud:
     gateway:
-      discovery:
-        locator:
-          enabled: true
-      routes:
-        - id: auth-id
-          uri: lb://auth-service
-          predicates:
-            - Path=/auth/**
-          filters:
-#            - AuthenticationFilter
-            - RewritePath=/auth/(?<path>.*), /$\{path}
-        - id: user-id
-          uri: lb://auth-service
-          predicates:
-            - Path=/user/**
-          filters:
-            - AuthenticationFilter
-            - RewritePath=/user/(?<path>.*), /$\{path}
-        - id: list-product-id
-          uri: lb://list-product-service
-          predicates:
-            - Path=/list-product/**
-          filters:
-            - AuthenticationFilter
-            - RewritePath=/list-product/(?<path>.*), /$\{path}
-        - id: web-client
-          uri: lb://web-client
-          predicates:
-            - Path=/web-client/**
-          filters:
-            - AuthenticationFilter
-            - RewritePath=/web-client/(?<path>.*), /$\{path}
-        - id: openapi
-          uri: http://localhost:${server.port}
-          predicates:
-            - Path=/v3/api-docs/**
-          filters:
-            - RewritePath=/v3/api-docs/(?<path>.*), /$\{path}/v3/api-docs
+      server:
+        webflux:
+          discovery:
+            locator:
+              enabled: true
+          routes:
+            - id: auth-id
+              uri: lb://auth-service
+              predicates:
+                - Path=/auth/**
+              filters:
+                - AuthenticationFilter
+                - RewritePath=/auth/(?<path>.*), /$\{path}
+            - id: list-product-id
+              uri: lb://list-product-service
+              predicates:
+                - Path=/list-product/**
+              filters:
+                - AuthenticationFilter
+                - RewritePath=/list-product/(?<path>.*), /$\{path}
+            - id: web-client
+              uri: lb://web-client
+              predicates:
+                - Path=/web-client/**
+              filters:
+                - AuthenticationFilter
+                - RewritePath=/web-client/(?<path>.*), /$\{path}
+            - id: openapi
+              uri: http://localhost:${server.port}
+              predicates:
+                - Path=/v3/api-docs/**
+              filters:
+                - RewritePath=/v3/api-docs/(?<path>.*), /$\{path}/v3/api-docs
 
 springdoc:
   swagger-ui:
     urls:
       - name: auth
         url: /v3/api-docs/auth
-      - name: user
-        url: /v3/api-docs/user
       - name: list-product
         url: /v3/api-docs/list-product

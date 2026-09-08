@@ -9,8 +9,14 @@ import org.springframework.web.client.RestTemplate;
 import ru.lakeevda.gatewayservice.exception.MissingAuthHeaderException;
 import ru.lakeevda.gatewayservice.exception.UnAuthAccessToAppException;
 
+import java.util.Objects;
+
 @Component
 public class AuthenticationFilter extends AbstractGatewayFilterFactory<AuthenticationFilter.Config> {
+    private static final String BEARER_ = "Bearer ";
+    private static final int BEARER_LENGTH = 7;
+    public static final String URL_VALIDATE_TOKEN = "http://localhost:8765/auth/validate?token=%s";
+
     @Autowired
     private RouteValidator validator;
     @Autowired
@@ -24,16 +30,17 @@ public class AuthenticationFilter extends AbstractGatewayFilterFactory<Authentic
     public GatewayFilter apply(Config config) {
         return ((exchange, chain) -> {
             if (validator.isSecured.test(exchange.getRequest())) {
-                if (!exchange.getRequest().getHeaders().containsKey(HttpHeaders.AUTHORIZATION)) {
+                if (!exchange.getRequest().getHeaders().containsHeader(HttpHeaders.AUTHORIZATION)) {
                     throw new MissingAuthHeaderException("Отсутствует заголовок авторизации");
                 }
 
-                String authHeader = exchange.getRequest().getHeaders().get(HttpHeaders.AUTHORIZATION).get(0);
-                if (authHeader != null && authHeader.startsWith("Bearer ")) {
-                    authHeader = authHeader.substring(7);
+                String authHeader = Objects.requireNonNull(exchange.getRequest()
+                        .getHeaders().get(HttpHeaders.AUTHORIZATION)).getFirst();
+                if (authHeader.startsWith(BEARER_)) {
+                    authHeader = authHeader.substring(BEARER_LENGTH);
                 }
                 try {
-                    template.getForObject("http://localhost:8765/auth/validate?token=" + authHeader, String.class);
+                    template.getForObject(String.format(URL_VALIDATE_TOKEN, authHeader), String.class);
                 } catch (Exception e) {
                     throw new UnAuthAccessToAppException("Несанкционированный доступ к приложению");
                 }

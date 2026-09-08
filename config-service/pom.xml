@@ -3,44 +3,32 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.2.4</version>
-        <relativePath/> <!-- lookup parent from repository -->
+        <groupId>ru.lakeevda</groupId>
+        <artifactId>ShopList</artifactId>
+        <version>1.1-SNAPSHOT</version>
     </parent>
-    <groupId>ru.lakeevda</groupId>
     <artifactId>config-service</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
     <name>config-service</name>
     <description>config-service</description>
+
     <properties>
         <sonar.moduleKey>${project.artifactId}</sonar.moduleKey>
-        <java.version>17</java.version>
-        <spring-cloud.version>2023.0.1</spring-cloud.version>
     </properties>
+
     <dependencies>
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-config-server</artifactId>
+            <version>${spring-cloud-starter.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
+            <version>${spring-boot-starter.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>org.springframework.cloud</groupId>
-                <artifactId>spring-cloud-dependencies</artifactId>
-                <version>${spring-cloud.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
 
     <build>
         <finalName>${project.artifactId}-${project.version}</finalName>
@@ -48,6 +36,7 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>${spring-boot-maven-plugin.version}</version>
                 <configuration>
                     <excludes>
                         <exclude>
@@ -60,51 +49,51 @@
         </plugins>
     </build>
 
-<!--    <profiles>-->
-<!--        <profile>-->
-<!--            <id>build-image</id>-->
-<!--            <build>-->
-<!--                <plugins>-->
-<!--                    <plugin>-->
-<!--                        <groupId>org.springframework.boot</groupId>-->
-<!--                        <artifactId>spring-boot-maven-plugin</artifactId>-->
-<!--                        <configuration>-->
-<!--                            <from>-->
-<!--                                <image>openjdk:17-oracle</image>-->
-<!--                            </from>-->
-<!--                            <to>-->
-<!--                                <image>${project.artifactId}:${project.version}</image>-->
-<!--                            </to>-->
-<!--                        </configuration>-->
-<!--                        <executions>-->
-<!--                            <execution>-->
-<!--                                <goals>-->
-<!--                                    <goal>dockerBuild</goal>-->
-<!--                                </goals>-->
-<!--                                <phase>package</phase>-->
-<!--                            </execution>-->
-<!--                        </executions>-->
-<!--                    </plugin>-->
-<!--                    &lt;!&ndash;					<plugin>&ndash;&gt;-->
-<!--                    &lt;!&ndash;						<groupId>org.springframework.boot</groupId>&ndash;&gt;-->
-<!--                    &lt;!&ndash;						<artifactId>spring-boot-maven-plugin</artifactId>&ndash;&gt;-->
-<!--                    &lt;!&ndash;						<configuration>&ndash;&gt;-->
-<!--                    &lt;!&ndash;							<image>&ndash;&gt;-->
-<!--                    &lt;!&ndash;								<name>piomin/${project.artifactId}:${project.version}</name>&ndash;&gt;-->
-<!--                    &lt;!&ndash;								<builder>paketobuildpacks/builder:full</builder>&ndash;&gt;-->
-<!--                    &lt;!&ndash;							</image>&ndash;&gt;-->
-<!--                    &lt;!&ndash;						</configuration>&ndash;&gt;-->
-<!--                    &lt;!&ndash;						<executions>&ndash;&gt;-->
-<!--                    &lt;!&ndash;							<execution>&ndash;&gt;-->
-<!--                    &lt;!&ndash;								<goals>&ndash;&gt;-->
-<!--                    &lt;!&ndash;									<goal>build-image</goal>&ndash;&gt;-->
-<!--                    &lt;!&ndash;								</goals>&ndash;&gt;-->
-<!--                    &lt;!&ndash;							</execution>&ndash;&gt;-->
-<!--                    &lt;!&ndash;						</executions>&ndash;&gt;-->
-<!--                    &lt;!&ndash;					</plugin>&ndash;&gt;-->
-<!--                </plugins>-->
-<!--            </build>-->
-<!--        </profile>-->
-<!--    </profiles>-->
+    <!--    <profiles>-->
+    <!--        <profile>-->
+    <!--            <id>build-image</id>-->
+    <!--            <build>-->
+    <!--                <plugins>-->
+    <!--                    <plugin>-->
+    <!--                        <groupId>org.springframework.boot</groupId>-->
+    <!--                        <artifactId>spring-boot-maven-plugin</artifactId>-->
+    <!--                        <configuration>-->
+    <!--                            <from>-->
+    <!--                                <image>openjdk:17-oracle</image>-->
+    <!--                            </from>-->
+    <!--                            <to>-->
+    <!--                                <image>${project.artifactId}:${project.version}</image>-->
+    <!--                            </to>-->
+    <!--                        </configuration>-->
+    <!--                        <executions>-->
+    <!--                            <execution>-->
+    <!--                                <goals>-->
+    <!--                                    <goal>dockerBuild</goal>-->
+    <!--                                </goals>-->
+    <!--                                <phase>package</phase>-->
+    <!--                            </execution>-->
+    <!--                        </executions>-->
+    <!--                    </plugin>-->
+    <!--                    &lt;!&ndash;					<plugin>&ndash;&gt;-->
+    <!--                    &lt;!&ndash;						<groupId>org.springframework.boot</groupId>&ndash;&gt;-->
+    <!--                    &lt;!&ndash;						<artifactId>spring-boot-maven-plugin</artifactId>&ndash;&gt;-->
+    <!--                    &lt;!&ndash;						<configuration>&ndash;&gt;-->
+    <!--                    &lt;!&ndash;							<image>&ndash;&gt;-->
+    <!--                    &lt;!&ndash;								<name>piomin/${project.artifactId}:${project.version}</name>&ndash;&gt;-->
+    <!--                    &lt;!&ndash;								<builder>paketobuildpacks/builder:full</builder>&ndash;&gt;-->
+    <!--                    &lt;!&ndash;							</image>&ndash;&gt;-->
+    <!--                    &lt;!&ndash;						</configuration>&ndash;&gt;-->
+    <!--                    &lt;!&ndash;						<executions>&ndash;&gt;-->
+    <!--                    &lt;!&ndash;							<execution>&ndash;&gt;-->
+    <!--                    &lt;!&ndash;								<goals>&ndash;&gt;-->
+    <!--                    &lt;!&ndash;									<goal>build-image</goal>&ndash;&gt;-->
+    <!--                    &lt;!&ndash;								</goals>&ndash;&gt;-->
+    <!--                    &lt;!&ndash;							</execution>&ndash;&gt;-->
+    <!--                    &lt;!&ndash;						</executions>&ndash;&gt;-->
+    <!--                    &lt;!&ndash;					</plugin>&ndash;&gt;-->
+    <!--                </plugins>-->
+    <!--            </build>-->
+    <!--        </profile>-->
+    <!--    </profiles>-->
 
 </project>

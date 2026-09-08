@@ -1,0 +1,23 @@
+package ru.lakeevda.authservice.dto;
+
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+
+@Data
+@Builder
+@AllArgsConstructor
+public class UserResponse {
+    @Schema(description = "Идентификатор пользователя", example = "1")
+    private Long id;
+
+    @Schema(description = "Имя пользователя", example = "User name")
+    private String username;
+
+    @Schema(description = "Телефон пользователя", example = "89121234567")
+    private String phone;
+
+    @Schema(description = "Адрес электронной почты", example = "user@mail.com")
+    private String email;
+}
