@@ -12,10 +12,7 @@ public class ListName {
 
     public static ListName of(String value) {
         if (value == null || value.trim().isEmpty()) {
-            throw new IllegalArgumentException("List name cannot be null or empty");
-        }
-        if (value.length() > 255) {
-            throw new IllegalArgumentException("List name cannot exceed 255 characters");
+            throw new IllegalArgumentException("Название списка не может быть null или пустым");
         }
         return new ListName(value.trim());
     }

@@ -1,8 +1,10 @@
 package ru.lakeevda.listproductservice.application.usecase;
 
 import lombok.RequiredArgsConstructor;
+import org.jspecify.annotations.NonNull;
 import org.springframework.stereotype.Service;
-import ru.lakeevda.listproductservice.application.boundary.model.product.ProductDto;
+import ru.lakeevda.listproductservice.application.boundary.model.product.ProductRequest;
+import ru.lakeevda.listproductservice.application.boundary.model.product.ProductResponse;
 import ru.lakeevda.listproductservice.application.mapper.ProductMapper;
 import ru.lakeevda.listproductservice.application.port.in.ProductUseCase;
 import ru.lakeevda.listproductservice.domain.entity.product.Product;
@@ -11,7 +13,7 @@ import ru.lakeevda.listproductservice.domain.entity.product.ProductListId;
 import ru.lakeevda.listproductservice.domain.entity.product.ProductName;
 import ru.lakeevda.listproductservice.domain.entity.product.ProductPrice;
 import ru.lakeevda.listproductservice.domain.entity.product.ProductUrl;
-import ru.lakeevda.listproductservice.domain.exception.DataNotFoundException;
+import ru.lakeevda.listproductservice.domain.exception.ProductNotFoundException;
 import ru.lakeevda.listproductservice.domain.exception.ProductExistException;
 import ru.lakeevda.listproductservice.domain.repository.ProductRepository;
 
@@ -24,14 +26,13 @@ public class ProductUseCaseImpl implements ProductUseCase {
     private final ProductRepository productRepository;
 
     @Override
-    public ProductDto getById(Long id) {
-        Product product = productRepository.findById(id)
-                .orElseThrow(() -> new DataNotFoundException("Продукт не найден!"));
+    public ProductResponse getById(Long id) {
+        Product product = getProduct(id);
         return ProductMapper.toDto(product);
     }
 
     @Override
-    public List<ProductDto> getProductsByListId(Long listId) {
+    public List<ProductResponse> getAllByListId(Long listId) {
         List<Product> products = productRepository.findAllByListId(listId);
         return products.stream()
                 .map(ProductMapper::toDto)
@@ -39,42 +40,44 @@ public class ProductUseCaseImpl implements ProductUseCase {
     }
 
     @Override
-    public ProductDto create(ProductDto product) {
-        if (productRepository.existsByNameAndListId(product.name(), product.listId())) {
-            throw new ProductExistException("Продукт с таким названием уже существует!");
+    public ProductResponse create(ProductRequest productRequest) {
+        if (productRepository.existsByNameAndListId(productRequest.name(), productRequest.listId())) {
+            throw new ProductExistException();
         }
 
-        Product productEntity = ProductMapper.toEntity(product);
+        Product productEntity = ProductMapper.toEntity(productRequest);
         Product savedProduct = productRepository.save(productEntity);
         return ProductMapper.toDto(savedProduct);
     }
 
     @Override
-    public void update(ProductDto product) {
-        Product existingProduct = productRepository.findById(product.id())
-                .orElseThrow(() -> new DataNotFoundException("Продукт не найден!"));
+    public void update(Long id, ProductRequest productRequest) {
+        Product existingProduct = getProduct(id);
 
         Product updatedProduct = Product.restore(
                 existingProduct.getId(),
-                ProductListId.of(product.listId()),
-                ProductName.of(product.name()),
-                ProductPrice.of(product.price()),
-                ProductUrl.of(product.url()),
-                ProductImage.of(product.image()),
-                product.purchased());
+                ProductListId.of(productRequest.listId()),
+                ProductName.of(productRequest.name()),
+                ProductPrice.of(productRequest.price()),
+                ProductUrl.of(productRequest.url()),
+                ProductImage.of(productRequest.image()),
+                productRequest.purchased());
 
         productRepository.save(updatedProduct);
     }
 
     @Override
     public void delete(Long id) {
-        Product product = productRepository.findById(id)
-                .orElseThrow(() -> new DataNotFoundException("Продукт не найден!"));
+        Product product = getProduct(id);
         productRepository.delete(product);
     }
 
     @Override
     public void deleteAllPurchasedProducts(Long listId) {
         productRepository.deleteByListIdAndPurchasedTrue(listId);
+    }
+
+    private @NonNull Product getProduct(Long id) {
+        return productRepository.findById(id).orElseThrow(ProductNotFoundException::new);
     }
 }

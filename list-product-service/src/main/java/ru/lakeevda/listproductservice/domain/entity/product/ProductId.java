@@ -12,10 +12,10 @@ public class ProductId {
 
     public static ProductId of(Long value) {
         if (value == null) {
-            throw new IllegalArgumentException("Product ID cannot be null");
+            throw new IllegalArgumentException("Идентификатор продукта не может быть null");
         }
         if (value <= 0) {
-            throw new IllegalArgumentException("Product ID must be positive");
+            throw new IllegalArgumentException("Идентификатор продукта должен быть положительным");
         }
         return new ProductId(value);
     }

@@ -18,7 +18,7 @@ public enum ListStatus {
 
     public static ListStatus fromValue(String text) {
         if (text == null || text.trim().isEmpty()) {
-            throw new IllegalArgumentException("List status cannot be null or empty");
+            throw new IllegalArgumentException("Статус списка не может быть null или пустым");
         }
 
         return Arrays.stream(ListStatus.values())

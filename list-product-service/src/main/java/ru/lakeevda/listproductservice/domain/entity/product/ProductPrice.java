@@ -14,10 +14,10 @@ public class ProductPrice {
 
     public static ProductPrice of(BigInteger value) {
         if (value == null) {
-            throw new IllegalArgumentException("Price cannot be null");
+            throw new IllegalArgumentException("Стоимость продукта не может быть null");
         }
         if (value.compareTo(BigInteger.ZERO) < 0) {
-            throw new IllegalArgumentException("Price cannot be negative");
+            throw new IllegalArgumentException("Стоимость продукта должна быть положительной");
         }
         return new ProductPrice(value);
     }

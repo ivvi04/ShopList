@@ -12,7 +12,10 @@ public class ListId {
 
     public static ListId of(Long value) {
         if (value == null) {
-            throw new IllegalArgumentException("List ID cannot be null");
+            throw new IllegalArgumentException("Идентификатор списка не может быть null");
+        }
+        if (value <= 0) {
+            throw new IllegalArgumentException("Идентификатор списка должен быть положительным");
         }
         return new ListId(value);
     }

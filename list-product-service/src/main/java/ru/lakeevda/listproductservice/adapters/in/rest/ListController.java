@@ -2,8 +2,17 @@ package ru.lakeevda.listproductservice.adapters.in.rest;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import ru.lakeevda.listproductservice.application.boundary.model.list.ListDto;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import ru.lakeevda.listproductservice.application.boundary.model.list.ListRequest;
+import ru.lakeevda.listproductservice.application.boundary.model.list.ListResponse;
 import ru.lakeevda.listproductservice.application.port.in.ListUseCase;
 
 import java.util.List;
@@ -15,48 +24,48 @@ public class ListController {
     private final ListUseCase listUseCase;
 
     @GetMapping("/{id}")
-    public ResponseEntity<ListDto> getList(@PathVariable Long id) {
-        ListDto list = listUseCase.getById(id);
+    public ResponseEntity<ListResponse> getById(@PathVariable Long id) {
+        ListResponse list = listUseCase.getById(id);
         return ResponseEntity.ok().body(list);
     }
 
     @PostMapping
-    public ResponseEntity<ListDto> createList(@RequestBody ListDto list) {
-        ListDto resultList = listUseCase.create(list);
+    public ResponseEntity<ListResponse> create(@RequestBody ListRequest list) {
+        ListResponse resultList = listUseCase.create(list);
         return ResponseEntity.ok().body(resultList);
     }
 
-    @GetMapping("/phone/{phone}")
-    public ResponseEntity<List<ListDto>> getLists(@PathVariable Long phone) {
-        List<ListDto> lists = listUseCase.getAllByPhone(phone);
-        return ResponseEntity.ok().body(lists);
-    }
-
-    @PutMapping("/phone/{phone}")
-    public ResponseEntity<Void> updateList(@PathVariable Long phone,
-                                           @RequestBody ListDto list) {
-        listUseCase.update(list, phone);
+    @PutMapping("/{id}")
+    public ResponseEntity<Void> update(@PathVariable Long id,
+                                       @RequestBody ListRequest list) {
+        listUseCase.update(id, list);
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("/phone/{phone}/{id}")
-    public ResponseEntity<Void> deleteList(@PathVariable Long phone,
-                                           @PathVariable Long id) {
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id,
+                                       @RequestParam Long phone) {
         listUseCase.delete(id, phone);
         return ResponseEntity.ok().build();
     }
 
+    @GetMapping("/phone/{phone}")
+    public ResponseEntity<List<ListResponse>> getAllByPhone(@PathVariable Long phone) {
+        List<ListResponse> lists = listUseCase.getAllByPhone(phone);
+        return ResponseEntity.ok().body(lists);
+    }
+
     @PutMapping("/{id}/user/add")
-    public ResponseEntity<ListDto> addUser(@PathVariable Long id,
-                                           @RequestParam Long phone) {
-        ListDto list = listUseCase.addUser(id, phone);
+    public ResponseEntity<ListResponse> addUser(@PathVariable Long id,
+                                                @RequestParam Long phone) {
+        ListResponse list = listUseCase.addUser(id, phone);
         return ResponseEntity.ok().body(list);
     }
 
     @PutMapping("/{id}/user/delete")
-    public ResponseEntity<ListDto> deleteUser(@PathVariable Long id,
-                                              @RequestParam Long phone) {
-        ListDto list = listUseCase.deleteUser(id, phone);
+    public ResponseEntity<ListResponse> deleteUser(@PathVariable Long id,
+                                                   @RequestParam Long phone) {
+        ListResponse list = listUseCase.deleteUser(id, phone);
         return ResponseEntity.ok().body(list);
     }
 }

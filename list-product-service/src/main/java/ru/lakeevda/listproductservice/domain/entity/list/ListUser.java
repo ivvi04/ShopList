@@ -19,6 +19,10 @@ public class ListUser {
         this.isAuthor = isAuthor;
     }
 
+    public static ListUser create(ListUserPhone userPhone) {
+        return new ListUser(userPhone, Boolean.TRUE);
+    }
+
     public static ListUser create(ListUserPhone userPhone, Boolean isAuthor) {
         return new ListUser(userPhone, isAuthor);
     }

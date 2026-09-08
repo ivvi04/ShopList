@@ -10,13 +10,14 @@ public class List {
     private ListId id;
     private ListName name;
     private ListStatus status;
-    private java.util.List<ListUser> listUsers = new ArrayList<>();
-    private java.util.List<Product> products = new ArrayList<>();
+    private final java.util.List<ListUser> listUsers;
+    private final java.util.List<Product> products;
 
     private List(ListName name, ListStatus status, java.util.List<ListUser> listUsers) {
         this.name = name;
         this.status = status;
         this.listUsers = listUsers;
+        this.products = new ArrayList<>();
     }
 
     private List(ListId id, ListName name, ListStatus status, java.util.List<ListUser> listUsers, java.util.List<Product> products) {
@@ -28,16 +29,16 @@ public class List {
     }
 
     public static List create(ListName name,
-                       ListStatus status,
-                       java.util.List<ListUser> listUsers) {
+                              ListStatus status,
+                              java.util.List<ListUser> listUsers) {
         return new List(name, status, listUsers);
     }
 
     public static List restore(ListId id,
-                        ListName name,
-                        ListStatus status,
-                        java.util.List<ListUser> listUsers,
-                        java.util.List<Product> products) {
+                               ListName name,
+                               ListStatus status,
+                               java.util.List<ListUser> listUsers,
+                               java.util.List<Product> products) {
         return new List(id, name, status, listUsers, products);
     }
 
@@ -57,9 +58,9 @@ public class List {
         this.listUsers.removeIf(user -> user.getUserPhone().getValue().equals(userPhone.getValue()));
     }
 
-    public boolean isUserAuthor(ListUserPhone userPhone) {
+    public boolean isUserNotAuthor(ListUserPhone userPhone) {
         return this.listUsers.stream()
-                .anyMatch(user -> user.getUserPhone().getValue().equals(userPhone.getValue()) && user.getIsAuthor());
+                .noneMatch(user -> user.getUserPhone().getValue().equals(userPhone.getValue()) && user.getIsAuthor());
     }
 
     public boolean hasUser(ListUserPhone userPhone) {

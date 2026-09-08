@@ -12,10 +12,10 @@ public class ListUserPhone {
 
     public static ListUserPhone of(Long value) {
         if (value == null) {
-            throw new IllegalArgumentException("User phone cannot be null");
+            throw new IllegalArgumentException("Телефон пользователя не может быть null");
         }
         if (value <= 0) {
-            throw new IllegalArgumentException("User phone must be positive");
+            throw new IllegalArgumentException("Телефон пользователя должен быть положительным");
         }
         return new ListUserPhone(value);
     }

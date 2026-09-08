@@ -14,9 +14,6 @@ public class ProductImage {
         if (value == null || value.trim().isEmpty()) {
             return null;
         }
-        if (value.length() > 500) {
-            throw new IllegalArgumentException("Image URL cannot exceed 500 characters");
-        }
         return new ProductImage(value.trim());
     }
 }

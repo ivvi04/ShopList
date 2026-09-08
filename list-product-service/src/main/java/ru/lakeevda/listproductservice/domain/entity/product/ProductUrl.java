@@ -15,12 +15,12 @@ public class ProductUrl {
 
     public static ProductUrl of(String value) {
         if (value == null || value.trim().isEmpty()) {
-            throw new IllegalArgumentException("Product URL cannot be null or empty");
+            throw new IllegalArgumentException("Ссылка продукта не может быть null или пустым");
         }
         try {
             new URI(value);
         } catch (URISyntaxException e) {
-            throw new IllegalArgumentException("Invalid product URL format", e);
+            throw new IllegalArgumentException("Ссылка продукта имеет некорректный формат", e);
         }
         return new ProductUrl(value.trim());
     }

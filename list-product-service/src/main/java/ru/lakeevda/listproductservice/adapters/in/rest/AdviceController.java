@@ -4,7 +4,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import ru.lakeevda.listproductservice.domain.exception.DataNotFoundException;
+import ru.lakeevda.listproductservice.domain.exception.ProductNotFoundException;
 import ru.lakeevda.listproductservice.domain.exception.UserNotAuthorException;
 import ru.lakeevda.listproductservice.domain.exception.ListNotFoundException;
 import ru.lakeevda.listproductservice.domain.exception.ProductExistException;
@@ -24,9 +24,9 @@ public class AdviceController {
         return e.getMessage();
     }
 
-    @ExceptionHandler(DataNotFoundException.class)
+    @ExceptionHandler(ProductNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public String dataNotFound(DataNotFoundException e) {
+    public String dataNotFound(ProductNotFoundException e) {
         return e.getMessage();
     }
 

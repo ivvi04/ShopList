@@ -3,8 +3,8 @@ package ru.lakeevda.listproductservice.application.usecase;
 import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.NonNull;
 import org.springframework.stereotype.Service;
-import ru.lakeevda.listproductservice.application.boundary.model.list.ListDto;
-import ru.lakeevda.listproductservice.application.boundary.model.list.ListUserDto;
+import ru.lakeevda.listproductservice.application.boundary.model.list.ListRequest;
+import ru.lakeevda.listproductservice.application.boundary.model.list.ListResponse;
 import ru.lakeevda.listproductservice.application.mapper.ListMapper;
 import ru.lakeevda.listproductservice.application.port.in.ListUseCase;
 import ru.lakeevda.listproductservice.domain.entity.list.List;
@@ -14,7 +14,6 @@ import ru.lakeevda.listproductservice.domain.entity.list.ListStatus;
 import ru.lakeevda.listproductservice.domain.entity.list.ListUserPhone;
 import ru.lakeevda.listproductservice.domain.exception.ListExistException;
 import ru.lakeevda.listproductservice.domain.exception.ListNotFoundException;
-import ru.lakeevda.listproductservice.domain.exception.UserAuthorIsEmptyException;
 import ru.lakeevda.listproductservice.domain.exception.UserNotAuthorException;
 import ru.lakeevda.listproductservice.domain.repository.ListRepository;
 
@@ -26,12 +25,12 @@ public class ListUseCaseImpl implements ListUseCase {
     private final ListRepository repository;
 
     @Override
-    public ListDto getById(Long id) {
+    public ListResponse getById(Long id) {
         return ListMapper.toDto(getList(id));
     }
 
     @Override
-    public java.util.List<ListDto> getAllByPhone(Long phone) {
+    public java.util.List<ListResponse> getAllByPhone(Long phone) {
         java.util.List<List> lists = repository.findAllByUserPhone(ListUserPhone.of(phone));
         return lists.stream()
                 .map(ListMapper::toDto)
@@ -39,44 +38,36 @@ public class ListUseCaseImpl implements ListUseCase {
     }
 
     @Override
-    public ListDto create(ListDto listDto) {
-        ListName name = ListName.of(listDto.name());
-        ListUserPhone userPhone = ListUserPhone.of(listDto.userPhones().stream()
-                .filter(ListUserDto::isAuthor)
-                .map(ListUserDto::userPhone)
-                .findFirst()
-                .orElseThrow(() -> new UserAuthorIsEmptyException("Не передан автор списка")));
+    public ListResponse create(ListRequest listRequest) {
+        ListName name = ListName.of(listRequest.name());
+        ListUserPhone userPhone = ListUserPhone.of(listRequest.phone());
         if (repository.findByNameAndUserPhone(name, userPhone).isPresent())
-            throw new ListExistException("Список с таким названием уже существует");
-        List list = ListMapper.toDomain(listDto, ListStatus.CREATED);
+            throw new ListExistException();
+        List list = ListMapper.toDomain(listRequest, ListStatus.CREATED);
         return ListMapper.toDto(repository.save(list));
     }
 
     @Override
-    public void update(ListDto listDto, Long phone) {
-        List list = getList(listDto.id());
+    public void update(Long id, ListRequest listRequest) {
+        List list = getList(id);
 
-        if (!list.isUserAuthor(ListUserPhone.of(phone))) {
-            throw new UserNotAuthorException("Только у автора есть права на редактирование!");
-        }
+        if (list.isUserNotAuthor(ListUserPhone.of(listRequest.phone()))) throw new UserNotAuthorException();
 
-        list.updateName(ListName.of(listDto.name()));
+        list.updateName(ListName.of(listRequest.name()));
         repository.save(list);
     }
 
     @Override
     public void delete(Long id, Long phone) {
-        List listEntity = getList(id);
+        List list = getList(id);
 
-        if (!listEntity.isUserAuthor(ListUserPhone.of(phone))) {
-            throw new UserNotAuthorException("Только у автора есть права на удаление!");
-        }
+        if (list.isUserNotAuthor(ListUserPhone.of(phone))) throw new UserNotAuthorException();
 
-        repository.delete(listEntity);
+        repository.delete(list);
     }
 
     @Override
-    public ListDto addUser(Long id, Long phone) {
+    public ListResponse addUser(Long id, Long phone) {
         List list = getList(id);
 
         ListUserPhone listUserPhone = ListUserPhone.of(phone);
@@ -90,7 +81,7 @@ public class ListUseCaseImpl implements ListUseCase {
     }
 
     @Override
-    public ListDto deleteUser(Long id, Long phone) {
+    public ListResponse deleteUser(Long id, Long phone) {
         List list = getList(id);
 
         list.removeListUser(ListUserPhone.of(phone));
@@ -98,7 +89,6 @@ public class ListUseCaseImpl implements ListUseCase {
     }
 
     private @NonNull List getList(Long id) {
-        return repository.findById(ListId.of(id))
-                .orElseThrow(() -> new ListNotFoundException("Список не найден!"));
+        return repository.findById(ListId.of(id)).orElseThrow(ListNotFoundException::new);
     }
 }
